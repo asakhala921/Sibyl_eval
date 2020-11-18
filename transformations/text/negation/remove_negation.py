@@ -1,4 +1,4 @@
-from .abstract_transformation import AbstractTransformation
+from ..abstract_transformation import AbstractTransformation
 import collections
 import pattern
 import spacy
@@ -6,8 +6,9 @@ import en_core_web_sm
 
 class RemoveNegation(AbstractTransformation):
     """
-    An abstract class for transformations to be applied 
-    to input data. 
+    Defines a transformation that removes a negation
+    if found within the input. Otherwise, return the 
+    original string unchanged. 
     """
 
     def __init__(self):

@@ -1,4 +1,4 @@
-from .abstract_transformation import AbstractTransformation
+from ..abstract_transformation import AbstractTransformation
 import collections
 import pattern
 import spacy
@@ -6,8 +6,7 @@ import en_core_web_sm
 
 class AddNegation(AbstractTransformation):
     """
-    An abstract class for transformations to be applied 
-    to input data. 
+    Defines a transformation that negates a string.
     """
 
     def __init__(self):
@@ -32,7 +31,6 @@ class AddNegation(AbstractTransformation):
             Output with *all* negations removed
 
         """
-        # This removes all negations in the doc. I should maybe add an option to remove just some.
         doc = self.nlp(string)
         for sentence in doc.sents:
             if len(sentence) < 3:
