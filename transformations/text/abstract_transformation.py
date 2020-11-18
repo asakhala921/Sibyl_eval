@@ -12,7 +12,7 @@ class AbstractTransformation(ABC):
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
         """
-        self.config = config
+        pass
     
     @abstractmethod
     def __call__(self, string):
