@@ -31,7 +31,7 @@ class WordDeletion(AbstractTransformation):
             The output with random words deleted
         """
         string_list = string.split(' ') # returns a list
-        for i in range(self.num_to_delete):
+        for _ in range(self.num_to_delete):
             idx = random.randint(0, len(string_list)-1)
             del string_list[idx]
         ret = ' '.join(string_list)
