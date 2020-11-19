@@ -19,7 +19,7 @@ class ChangeNumber(AbstractTransformation):
         ----------
         multiplier : float
             The value by which all numbers in the input
-            string will be multiplied.
+            string will be multiplied
 
         repalcement : float
             The value by which all numbers in the input
