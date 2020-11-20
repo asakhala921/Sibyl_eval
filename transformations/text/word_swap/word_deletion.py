@@ -45,13 +45,6 @@ class WordDeletion(AbstractTransformation):
         #if you end up deleting all words, just return a random word
         if len(new_words) == 0:
             rand_int = random.randint(0, len(words)-1)
-            return [words[rand_int]]
+            return words[rand_int]
 
         return " ".join(new_words)
-
-        # string_list = string.split(' ') # returns a list
-        # for _ in range(self.num_to_delete):
-        #     idx = random.randint(0, len(string_list)-1)
-        #     del string_list[idx]
-        # ret = ' '.join(string_list)
-        # return ret
