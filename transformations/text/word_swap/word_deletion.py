@@ -6,19 +6,19 @@ class WordDeletion(AbstractTransformation):
     Deletes words from random indices in the string input
     """
 
-    def __init__(self, num_to_delete=1):
+    def __init__(self, p=0.25):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
 
         Parameters
         ----------
-        num_to_delete : int
-            The number of words to delete at random
+        p : float
+            Randomly delete words from the sentence with probability p
         """
-        self.num_to_delete = num_to_delete
+        self.p = p
     
-    def __call__(self, string):
+    def __call__(self, words):
         """
         Parameters
         ----------
@@ -30,9 +30,28 @@ class WordDeletion(AbstractTransformation):
         ret : str
             The output with random words deleted
         """
-        string_list = string.split(' ') # returns a list
-        for _ in range(self.num_to_delete):
-            idx = random.randint(0, len(string_list)-1)
-            del string_list[idx]
-        ret = ' '.join(string_list)
-        return ret
+        words = words.split()
+        #obviously, if there's only one word, don't delete it
+        if len(words) == 1:
+            return words
+
+        #randomly delete words with probability p
+        new_words = []
+        for word in words:
+            r = random.uniform(0, 1)
+            if r > self.p:
+                new_words.append(word)
+
+        #if you end up deleting all words, just return a random word
+        if len(new_words) == 0:
+            rand_int = random.randint(0, len(words)-1)
+            return [words[rand_int]]
+
+        return " ".join(new_words)
+
+        # string_list = string.split(' ') # returns a list
+        # for _ in range(self.num_to_delete):
+        #     idx = random.randint(0, len(string_list)-1)
+        #     del string_list[idx]
+        # ret = ' '.join(string_list)
+        # return ret

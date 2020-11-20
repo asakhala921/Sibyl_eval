@@ -8,16 +8,16 @@ class RandomInsertion(AbstractTransformation):
     Inserts random words
     """
 
-    def __init__(self):
+    def __init__(self, n=1):
         """
         Initializes the transformation
 
         Parameters
         ----------
         """
-        pass
+        self.n=n
     
-    def __call__(self, words, n=1):
+    def __call__(self, words):
         """
         Parameters
         ----------
@@ -29,10 +29,10 @@ class RandomInsertion(AbstractTransformation):
         Returns
         ----------
         ret : str
-            The output with random words swapped
+            The output with random words inserted
         """
         new_words = words.split()
-        for _ in range(n):
+        for _ in range(self.n):
             add_word(new_words)
         return ' '.join(new_words)
 

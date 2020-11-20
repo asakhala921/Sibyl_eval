@@ -8,16 +8,16 @@ class RandomSwap(AbstractTransformation):
     Swaps random words
     """
 
-    def __init__(self):
+    def __init__(self, n=1):
         """
         Initializes the transformation
 
         Parameters
         ----------
         """
-        pass
+        self.n=n
     
-    def __call__(self, words, n=1):
+    def __call__(self, words):
         """
         Parameters
         ----------
@@ -32,7 +32,7 @@ class RandomSwap(AbstractTransformation):
             The output with random words swapped
         """
         new_words = (words).split()
-        for _ in range(n):
+        for _ in range(self.n):
             new_words = swap_word(new_words)
         return ' '.join(new_words)
 

@@ -5,17 +5,15 @@ import numpy as np
 class HomoglyphSwap(AbstractTransformation):
     """Transforms an input by replacing its words with visually similar words
     using homoglyph swaps."""
-    def __init__(self, random_one=False, all=False):
+    def __init__(self, change=0.25):
         """
         Initializes the transformation
 
         Parameters
         ----------
-        random_one : boolean
-            Whether to swap a random char or not.
-            False by default
-            WARNING setting it to true can be dangerous coz it 
-            might return empty list
+        change: float
+            tells how many of the charachters in string to possibly replace
+        warning: it will check change % or charachters for possible replacement
         """
         self.homos = {
             "-": "˗",
@@ -57,8 +55,8 @@ class HomoglyphSwap(AbstractTransformation):
             "y": "у",
             "z": "ᴢ",
         }
-        self.random_one = random_one
-        self.all= all
+        assert(0<=change<=1)
+        self.change= change
     
     def __call__(self, string):
         """
@@ -74,27 +72,15 @@ class HomoglyphSwap(AbstractTransformation):
         """
         """Returns a list containing all possible words with 1 character
         replaced by a homoglyph."""
-        candidate_words = []
-        
-        if self.all:
-            temp = string # deep coppy apparently 
-            for i in range(len(string)):
-                if string[i] in self.homos:
-                    repl_letter = self.homos[string[i]]
-                    temp = temp[:i] + repl_letter + string[i + 1 :]
-            return temp
 
-        if self.random_one:
-            i = np.random.randint(0, len(string))
+        # possibly = [k for k,j in enumerate(string) if j in self.homos]
+        # indices = list(np.random.choice(possibly, int(np.ceil(self.change*len(string))), replace=False) )
+                # try, catch ValueError ? safer option
+        indices = np.random.choice(len(string), int(np.ceil(self.change*len(string))), replace=False)
+        
+        temp = string # deep coppy apparently 
+        for i in sorted(indices):
             if string[i] in self.homos:
                 repl_letter = self.homos[string[i]]
-                candidate_word = string[:i] + repl_letter + string[i + 1 :]
-                candidate_words.append(candidate_word)
-        else:
-            for i in range(len(string)):
-                if string[i] in self.homos:
-                    repl_letter = self.homos[string[i]]
-                    candidate_word = string[:i] + repl_letter + string[i + 1 :]
-                    candidate_words.append(candidate_word)
-
-        return candidate_words
+                temp = temp[:i] + repl_letter + string[i+1:]
+        return temp
