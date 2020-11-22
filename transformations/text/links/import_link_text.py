@@ -19,19 +19,15 @@ class ImportLinkText(AbstractTransformation):
 
         Parameters
         ----------
-        url : str
-            The URL to append to an input string
-
-        sentiment : str
-            Determines whether the constructed URL will 
-            feature a positive or negative sentiment.
+        NA
+        
         """
         # https://gist.github.com/uogbuji/705383#gistcomment-2250605
         self.URL_REGEX = re.compile(r'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
     
     def __call__(self, string):
         """
-        Appends a given / constructed URL to a string input.
+        Add extracted (visible)
 
         Parameters
         ----------
@@ -41,7 +37,7 @@ class ImportLinkText(AbstractTransformation):
         Returns
         -------
         ret
-            String with URL appended
+            String with visible text from the URL appended
         """
         def replace(match):
             url = match.group(0)

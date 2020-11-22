@@ -30,7 +30,7 @@ class AddSentimentLink(AbstractTransformation):
         else:
             self.default_url = False
         self.sentiment = sentiment
-        if self.sentiment not in ['positive', 'negative']:
+        if self.sentiment.lower() not in ['positive', 'negative']:
             raise ValueError("Sentiment must be 'positive' or 'negative'.")
         # https://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html#lexicon
         self.pos_words = pd.read_csv('../data/opinion-lexicon-English/positive-words.txt', skiprows=30, names=['word'], encoding='latin-1')
