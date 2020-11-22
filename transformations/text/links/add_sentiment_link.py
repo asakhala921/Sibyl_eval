@@ -60,6 +60,3 @@ class AddSentimentLink(AbstractTransformation):
             link = self.url
         ret = string + ' ' + link
         return ret
-
-
-        
