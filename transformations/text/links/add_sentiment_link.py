@@ -1,5 +1,6 @@
 from ..abstract_transformation import AbstractTransformation
 import pandas as pd
+import os
 
 class AddSentimentLink(AbstractTransformation):
     """
@@ -33,8 +34,11 @@ class AddSentimentLink(AbstractTransformation):
         if self.sentiment.lower() not in ['positive', 'negative']:
             raise ValueError("Sentiment must be 'positive' or 'negative'.")
         # https://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html#lexicon
-        self.pos_words = pd.read_csv('../data/opinion-lexicon-English/positive-words.txt', skiprows=30, names=['word'], encoding='latin-1')
-        self.neg_words = pd.read_csv('../data/opinion-lexicon-English/negative-words.txt', skiprows=30, names=['word'], encoding='latin-1')
+        cur_path = os.path.dirname(os.path.realpath(__file__))
+        pos_path = os.path.join(cur_path, '../data/opinion-lexicon-English/positive-words.txt')
+        neg_path = os.path.join(cur_path, '../data/opinion-lexicon-English/negative-words.txt')
+        self.pos_words = pd.read_csv(pos_path, skiprows=30, names=['word'], encoding='latin-1')
+        self.neg_words = pd.read_csv(neg_path, skiprows=30, names=['word'], encoding='latin-1')
     
     def __call__(self, string):
         """
