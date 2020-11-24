@@ -14,12 +14,10 @@ class AddSentimentLink(AbstractTransformation):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
-
         Parameters
         ----------
         url : str
             The URL to append to an input string
-
         sentiment : str
             Determines whether the constructed URL will 
             feature a positive or negative sentiment.
@@ -43,12 +41,10 @@ class AddSentimentLink(AbstractTransformation):
     def __call__(self, string):
         """
         Appends a given / constructed URL to a string input.
-
         Parameters
         ----------
         string : str
             Input string
-
         Returns
         -------
         ret
