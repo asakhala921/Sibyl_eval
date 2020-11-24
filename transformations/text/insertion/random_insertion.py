@@ -63,9 +63,7 @@ def add_word(new_words):
 
 
 
-    # name, location, synse
     # word_embedding
-    # extensionmap and its inverse contractions
     # gradient based
     # swap masked im
     # typos
