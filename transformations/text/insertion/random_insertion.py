@@ -14,6 +14,8 @@ class RandomInsertion(AbstractTransformation):
 
         Parameters
         ----------
+        n : int
+            The number of random insertions to perform
         """
         self.n=n
     
