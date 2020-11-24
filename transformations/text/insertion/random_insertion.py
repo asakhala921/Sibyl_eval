@@ -1,7 +1,7 @@
 from ..abstract_transformation import AbstractTransformation
 import numpy as np
 import random
-from nltk.corpus import wordnet
+from ..word_swap.change_synse import all_possible_synonyms
 
 class RandomInsertion(AbstractTransformation):
     """
@@ -41,7 +41,7 @@ def add_word(new_words):
     counter = 0
     while len(synonyms) < 1:
         random_word = new_words[random.randint(0, len(new_words)-1)]
-        synonyms = get_synonyms(random_word)
+        synonyms = all_possible_synonyms(random_word) #get_synonyms(random_word)
         counter += 1
         if counter >= 10:
             return
@@ -49,17 +49,17 @@ def add_word(new_words):
     random_idx = random.randint(0, len(new_words)-1)
     new_words.insert(random_idx, random_synonym)
 
-def get_synonyms(word):
-    synonyms = set()
-    for syn in wordnet.synsets(word): 
-        for l in syn.lemmas():
-            print("synonym is", syn, l)
-            synonym = l.name().replace("_", " ").replace("-", " ").lower()
-            synonym = "".join([char for char in synonym if char in ' qwertyuiopasdfghjklzxcvbnm'])
-            synonyms.add(synonym) 
-    if word in synonyms:
-        synonyms.remove(word)
-    return list(synonyms)
+# from nltk.corpus import wordnet
+# def get_synonyms(word):
+#     synonyms = set()
+#     for syn in wordnet.synsets(word): 
+#         for l in syn.lemmas():
+#             synonym = l.name().replace("_", " ").replace("-", " ").lower()
+#             synonym = "".join([char for char in synonym if char in ' qwertyuiopasdfghjklzxcvbnm'])
+#             synonyms.add(synonym) 
+#     if word in synonyms:
+#         synonyms.remove(word)
+#     return list(synonyms)
 
 
 
