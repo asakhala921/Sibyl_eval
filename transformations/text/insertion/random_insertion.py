@@ -14,6 +14,8 @@ class RandomInsertion(AbstractTransformation):
 
         Parameters
         ----------
+        n : int
+            The number of random insertions to perform
         """
         self.n=n
     
@@ -60,10 +62,3 @@ def add_word(new_words):
 #     if word in synonyms:
 #         synonyms.remove(word)
 #     return list(synonyms)
-
-
-
-    # word_embedding
-    # gradient based
-    # swap masked im
-    # typos

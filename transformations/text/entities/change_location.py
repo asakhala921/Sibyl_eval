@@ -5,13 +5,11 @@ from .data import NAMED_ENTITIES
 
 class ChangeLocation(AbstractTransformation):
     """
-    Changes person names
+    Changes Location names
     """
 
     def __init__(self):
-        """Transforms an input by replacing names of recognized name entity.
-        :param first_only: Whether to change first name only
-        :param last_only: Whether to change last name only
+        """Transforms an input by replacing names of recognized location entity.
         """
         self.nlp = en_core_web_sm.load()
     
@@ -25,7 +23,7 @@ class ChangeLocation(AbstractTransformation):
         Returns
         ----------
         ret : str
-            The output with person names replaced
+            The output with location names replaced
         """
         doc = self.nlp(words)
         newString = words
