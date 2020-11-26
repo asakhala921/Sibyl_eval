@@ -1,4 +1,4 @@
-from ..abstract_transformation import AbstractTransformation
+from ..abstract_transformation import AbstractTransformation, _get_tran_types
 from emoji_translate import Translator
 
 class Emojify(AbstractTransformation):
@@ -35,3 +35,11 @@ class Emojify(AbstractTransformation):
             to emojis as possible.
         """
         return self.emo.emojify(string)
+
+    def get_tran_types(self, task_name=None, tran_type=None):
+        self.tran_types = {
+            'task_name': ['sentiment', 'topic'],
+            'tran_type': ['INV', 'INV']
+        }
+        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        return df

@@ -1,4 +1,4 @@
-from ..abstract_transformation import AbstractTransformation
+from ..abstract_transformation import AbstractTransformation, _get_tran_types
 import collections
 import pattern
 import spacy
@@ -85,3 +85,11 @@ class RemoveNegation(AbstractTransformation):
             start = id_end
         ret += doc[id_end:].text
         return ret
+
+    def get_tran_types(self, task_name=None, tran_type=None):
+        self.tran_types = {
+            'task_name': ['sentiment', 'topic'],
+            'tran_type': ['SIB', 'INV']
+        }
+        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        return df

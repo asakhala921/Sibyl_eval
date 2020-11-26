@@ -1,4 +1,4 @@
-from ..abstract_transformation import AbstractTransformation
+from ..abstract_transformation import AbstractTransformation, _get_tran_types
 import re
 import random
 from pattern.en import wordnet
@@ -73,8 +73,71 @@ class ChangeSynse(AbstractTransformation):
         ret = ' '.join(new_words)
         return ret
 
+    def get_tran_types(self, task_name=None, tran_type=None):
+        pass
+
+class ChangeSynonym(ChangeSynse):
+    def __init__(self, synse='synonym', num_to_replace=1):
+        super().__init__(synse=synse, num_to_replace=num_to_replace) 
+
+    def __call__(self, string):
+        return super().__call__(string)
+
+    def get_tran_types(self, task_name=None, tran_type=None):
+        self.tran_types = {
+            'task_name': ['sentiment', 'topic'],
+            'tran_type': ['INV', 'INV']
+        }
+        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        return df
+
+class ChangeAntonym(ChangeSynse):
+    def __init__(self, synse='antonym', num_to_replace=1):
+        super().__init__(synse=synse, num_to_replace=num_to_replace) 
+
+    def __call__(self, string):
+        return super().__call__(string)
+
+    def get_tran_types(self, task_name=None, tran_type=None):
+        self.tran_types = {
+            'task_name': ['sentiment', 'topic'],
+            'tran_type': ['SIB', 'SIB']
+        }
+        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        return df
+
+class ChangeHyponym(ChangeSynse):
+    def __init__(self, synse='hyponym', num_to_replace=1):
+        super().__init__(synse=synse, num_to_replace=num_to_replace) 
+
+    def __call__(self, string):
+        return super().__call__(string)
+
+    def get_tran_types(self, task_name=None, tran_type=None):
+        self.tran_types = {
+            'task_name': ['sentiment', 'topic'],
+            'tran_type': ['INV', 'SIB']
+        }
+        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        return df
+
+class ChangeHypernym(ChangeSynse):
+    def __init__(self, synse='hypernym', num_to_replace=1):
+        super().__init__(synse=synse, num_to_replace=num_to_replace) 
+
+    def __call__(self, string):
+        return super().__call__(string)
+
+    def get_tran_types(self, task_name=None, tran_type=None):
+        self.tran_types = {
+            'task_name': ['sentiment', 'topic'],
+            'tran_type': ['INV', 'SIB']
+        }
+        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        return df
+
 def all_synsets(word, pos=None):
-    map = {
+    pos_map = {
         'NOUN': wordnet.NOUN,
         'VERB': wordnet.VERB,
         'ADJ': wordnet.ADJECTIVE,
@@ -83,7 +146,7 @@ def all_synsets(word, pos=None):
     if pos is None:
         pos_list = [wordnet.VERB, wordnet.ADJECTIVE, wordnet.NOUN, wordnet.ADVERB]
     else:
-        pos_list = [map[pos]]
+        pos_list = [pos_map[pos]]
     ret = []
     for pos in pos_list:
         ret.extend(wordnet.synsets(word, pos=pos))

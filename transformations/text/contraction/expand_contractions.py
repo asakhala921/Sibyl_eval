@@ -1,4 +1,4 @@
-from ..abstract_transformation import AbstractTransformation
+from ..abstract_transformation import AbstractTransformation, _get_tran_types
 import re
 
 class ExpandContractions(AbstractTransformation):
@@ -61,15 +61,24 @@ class ExpandContractions(AbstractTransformation):
             String with contractions expanded (if any)
 
         """# self.reverse_contraction_map = dict([(y, x) for x, y in self.contraction_map.items()])
-        contraction_pattern = re.compile(r'\b({})\b'.format('|'.join(self.contraction_map.keys())),
-            flags=re.IGNORECASE|re.DOTALL)
+        contraction_pattern = re.compile(r'\b({})\b'.format(
+            '|'.join(self.contraction_map.keys())), flags=re.IGNORECASE|re.DOTALL)
 
         def expand_match(contraction):
             match = contraction.group(0)
             first_char = match[0]
-            expanded_contraction = self.contraction_map.get(match, self.contraction_map.get(match.lower()))
+            expanded_contraction = self.contraction_map.get(match, 
+                self.contraction_map.get(match.lower()))
             expanded_contraction = first_char + expanded_contraction[1:]
             return expanded_contraction
 
         return contraction_pattern.sub(expand_match, string)
     
+
+    def get_tran_types(self, task_name=None, tran_type=None):
+        self.tran_types = {
+            'task_name': ['sentiment', 'topic'],
+            'tran_type': ['INV', 'INV']
+        }
+        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        return df

@@ -1,4 +1,4 @@
-from ..abstract_transformation import AbstractTransformation
+from ..abstract_transformation import AbstractTransformation, _get_tran_types
 import numpy as np
 import re
 import spacy
@@ -56,3 +56,11 @@ class ChangeNumber(AbstractTransformation):
             sub_re = re.compile(r'\b%s\b' % x)
             ret = sub_re.sub(str(change), doc.text)
         return ret
+
+    def get_tran_types(self, task_name=None, tran_type=None):
+        self.tran_types = {
+            'task_name': ['sentiment', 'topic'],
+            'tran_type': ['INV', 'INV']
+        }
+        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        return df

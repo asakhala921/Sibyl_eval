@@ -1,4 +1,4 @@
-from ..abstract_transformation import AbstractTransformation
+from ..abstract_transformation import AbstractTransformation, _get_tran_types
 import numpy as np
 import random
 import re
@@ -35,6 +35,14 @@ class RandomSwap(AbstractTransformation):
         for _ in range(self.n):
             new_words = swap_word(new_words)
         return ' '.join(new_words)
+
+    def get_tran_types(self, task_name=None, tran_type=None):
+        self.tran_types = {
+            'task_name': ['sentiment', 'topic'],
+            'tran_type': ['INV', 'INV']
+        }
+        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        return df
 
 def swap_word(new_words):
 	random_idx_1 = random.randint(0, len(new_words)-1)

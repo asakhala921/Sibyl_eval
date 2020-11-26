@@ -1,4 +1,4 @@
-from ..abstract_transformation import AbstractTransformation
+from ..abstract_transformation import AbstractTransformation, _get_tran_types
 import numpy as np
 import en_core_web_sm
 from .data import PERSON_NAMES
@@ -57,3 +57,11 @@ class ChangeName(AbstractTransformation):
     def _get_firstname(self):
         """Return a random first name."""
         return np.random.choice(PERSON_NAMES["first"])
+
+    def get_tran_types(self, task_name=None, tran_type=None):
+        self.tran_types = {
+            'task_name': ['sentiment', 'topic'],
+            'tran_type': ['INV', 'INV']
+        }
+        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        return df
