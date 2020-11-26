@@ -1,4 +1,4 @@
-from ..abstract_transformation import AbstractTransformation
+from ..abstract_transformation import AbstractTransformation, _get_tran_types
 from ..data.phrases import POSITIVE_PHRASES, NEGATIVE_PHRASES
 from random import sample 
 
@@ -43,3 +43,11 @@ class InsertSentimentPhrase(AbstractTransformation):
         	phrase = sample(NEGATIVE_PHRASES,1)[0]
         ret = string + " " + phrase
         return ret
+
+    def get_tran_types(self, task_name=None, tran_type=None):
+        self.tran_types = {
+            'task_name': ['sentiment', 'topic'],
+            'tran_type': ['SIB', 'INV']
+        }
+        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        return df

@@ -1,4 +1,4 @@
-from ..abstract_transformation import AbstractTransformation
+from ..abstract_transformation import AbstractTransformation, _get_tran_types
 import random
 import numpy as np
 
@@ -84,3 +84,11 @@ class HomoglyphSwap(AbstractTransformation):
                 repl_letter = self.homos[string[i]]
                 temp = temp[:i] + repl_letter + string[i+1:]
         return temp
+
+    def get_tran_types(self, task_name=None, tran_type=None):
+        self.tran_types = {
+            'task_name': ['sentiment', 'topic'],
+            'tran_type': ['INV', 'INV']
+        }
+        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        return df

@@ -1,4 +1,4 @@
-from ..abstract_transformation import AbstractTransformation
+from ..abstract_transformation import AbstractTransformation, _get_tran_types
 import collections
 import pattern
 import spacy
@@ -90,3 +90,11 @@ class AddNegation(AbstractTransformation):
                         do = 'not'
                         new_root = root.text
                     return '%s %s %s %s' % (doc[:root_id].text, do, new_root,  doc[root_id + 1:].text)
+
+    def get_tran_types(self, task_name=None, tran_type=None):
+        self.tran_types = {
+            'task_name': ['sentiment', 'topic'],
+            'tran_type': ['SIB', 'INV']
+        }
+        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        return df

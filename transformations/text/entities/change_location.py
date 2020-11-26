@@ -1,4 +1,4 @@
-from ..abstract_transformation import AbstractTransformation
+from ..abstract_transformation import AbstractTransformation, _get_tran_types
 import numpy as np
 import en_core_web_sm
 from .data import NAMED_ENTITIES
@@ -45,3 +45,11 @@ class ChangeLocation(AbstractTransformation):
         """Return a random location name."""
         loc = np.random.choice(['country', 'nationality', 'city'])
         return np.random.choice(NAMED_ENTITIES[loc])
+
+    def get_tran_types(self, task_name=None, tran_type=None):
+        self.tran_types = {
+            'task_name': ['sentiment', 'topic'],
+            'tran_type': ['INV', 'INV']
+        }
+        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        return df

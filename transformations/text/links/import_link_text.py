@@ -1,4 +1,4 @@
-from ..abstract_transformation import AbstractTransformation
+from ..abstract_transformation import AbstractTransformation, _get_tran_types
 from urllib.request import urlopen
 from bs4 import BeautifulSoup 
 from bs4.element import Comment
@@ -44,6 +44,14 @@ class ImportLinkText(AbstractTransformation):
             return get_url_text(url)
         ret = self.URL_REGEX.sub(replace, string)
         return ret
+
+    def get_tran_types(self, task_name=None, tran_type=None):
+        self.tran_types = {
+            'task_name': ['sentiment', 'topic'],
+            'tran_type': ['INV', 'INV']
+        }
+        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        return df
 
 def tag_visible(element):
     if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
