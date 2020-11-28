@@ -1,6 +1,7 @@
 from ..abstract_transformation import AbstractTransformation, _get_tran_types
 import collections
 import pattern
+from pattern import en
 import spacy
 import en_core_web_sm
 
@@ -17,18 +18,18 @@ class AddNegation(AbstractTransformation):
         self.nlp = en_core_web_sm.load()
     
     def __call__(self, string):
-        """Removes negation from a string by first 
+        """Adds negation to a string by first 
         converting it to spacy.token.Doc. 
 
         Parameters
         ----------
         string : str
-            Input to have negation removed
+            Input to have negation added
 
         Returns
         -------
         ret : str
-            Output with *all* negations removed
+            Output with *all* negations added
 
         """
         doc = self.nlp(string)

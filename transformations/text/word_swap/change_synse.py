@@ -1,8 +1,9 @@
 from ..abstract_transformation import AbstractTransformation, _get_tran_types
+import numpy as np
 import re
 import random
 from pattern.en import wordnet
-from pattern.text.en.wordlist import STOPWORDS
+from nltk.corpus import stopwords
 import spacy
 import en_core_web_sm
 
@@ -12,7 +13,7 @@ class ChangeSynse(AbstractTransformation):
     with synses from wordnet. Also supports part-of-speech (pos)
     tagging via spaCy to get more natural replacements. 
     """
-    def __init__(self, synse='synonym', num_to_replace=1):
+    def __init__(self, synse='synonym', num_to_replace=-1):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -25,7 +26,8 @@ class ChangeSynse(AbstractTransformation):
             and 'hypernym' 
         num_to_replace : int
             The number of words randomly selected from the input 
-            to replace with synonyms (excludes stop words)
+            to replace with synonyms (excludes stop words).
+            If -1, then replace as many as possible.
         """
         self.synse = synse
         self.synses = {
@@ -38,8 +40,11 @@ class ChangeSynse(AbstractTransformation):
             raise ValueError("Invalid synse argument. \n \
                 Please select one of the following: 'synonym', 'antonym', 'hyponym', 'hypernym'")
         self.synse_fn = self.synses[self.synse]
-        self.num_to_replace = num_to_replace
+        self.num_to_replace = np.Inf if num_to_replace == -1 else num_to_replace
         self.nlp = en_core_web_sm.load()
+        # stopwords 
+        useful_stopwords = ['few', 'more', 'most', 'against']
+        self.stopwords = [w for w in stopwords.words('english') if w not in useful_stopwords]
     
     def __call__(self, string):
         """Replaces words with synses
@@ -57,12 +62,16 @@ class ChangeSynse(AbstractTransformation):
         doc = self.nlp(string)
         new_words = string.split(' ').copy()
         random_word_list = list(set(
-            [word for word in new_words if strip_punct(word.lower()) not in STOPWORDS]))
+            [word for word in new_words if strip_punct(word.lower()) not in self.stopwords]))
         random.shuffle(random_word_list)
         num_replaced = 0
         for random_word in random_word_list:
             idx = new_words.index(random_word)
             pos = doc[idx].pos_
+            if pos in ['PROPN']:
+                continue
+            if pos not in ['NOUN', 'VERB', 'ADJ', 'ADV']:
+                pos = None
             options = self.synse_fn(strip_punct(random_word), pos)
             if len(options) >= 1:
                 option = random.choice(list(options))
@@ -77,8 +86,8 @@ class ChangeSynse(AbstractTransformation):
         pass
 
 class ChangeSynonym(ChangeSynse):
-    def __init__(self, synse='synonym', num_to_replace=1):
-        super().__init__(synse=synse, num_to_replace=num_to_replace) 
+    def __init__(self, num_to_replace=-1):
+        super().__init__(synse='synonym', num_to_replace=num_to_replace) 
 
     def __call__(self, string):
         return super().__call__(string)
@@ -92,8 +101,8 @@ class ChangeSynonym(ChangeSynse):
         return df
 
 class ChangeAntonym(ChangeSynse):
-    def __init__(self, synse='antonym', num_to_replace=1):
-        super().__init__(synse=synse, num_to_replace=num_to_replace) 
+    def __init__(self, num_to_replace=-1):
+        super().__init__(synse='antonym', num_to_replace=num_to_replace) 
 
     def __call__(self, string):
         return super().__call__(string)
@@ -107,8 +116,8 @@ class ChangeAntonym(ChangeSynse):
         return df
 
 class ChangeHyponym(ChangeSynse):
-    def __init__(self, synse='hyponym', num_to_replace=1):
-        super().__init__(synse=synse, num_to_replace=num_to_replace) 
+    def __init__(self, num_to_replace=-1):
+        super().__init__(synse='hyponym', num_to_replace=num_to_replace) 
 
     def __call__(self, string):
         return super().__call__(string)
@@ -122,8 +131,8 @@ class ChangeHyponym(ChangeSynse):
         return df
 
 class ChangeHypernym(ChangeSynse):
-    def __init__(self, synse='hypernym', num_to_replace=1):
-        super().__init__(synse=synse, num_to_replace=num_to_replace) 
+    def __init__(self, num_to_replace=-1):
+        super().__init__(synse='hypernym', num_to_replace=num_to_replace) 
 
     def __call__(self, string):
         return super().__call__(string)
@@ -169,7 +178,15 @@ def all_possible_antonyms(word, pos=None):
         if not syn.antonym:
             continue
         for s in syn.antonym:
-            ret.extend(s.senses)
+            ret.extend(s.senses)            
+    if not ret:
+        synos = all_possible_synonyms(word, pos)
+        for syno in synos:
+            for syn in all_synsets(syno, pos=pos):
+                if not syn.antonym:
+                    continue
+                for s in syn.antonym:
+                    ret.extend(s.senses)
     return clean_senses(ret)
 
 def all_possible_hypernyms(word, pos=None, depth=None):
