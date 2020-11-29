@@ -45,7 +45,7 @@ class RemoveNegation(AbstractTransformation):
             new.append(notz)
         notzs = new
         if not notzs:
-            return None
+            return string
         ret = ''
         start = 0
         for i, notz in enumerate(notzs):

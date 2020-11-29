@@ -51,3 +51,45 @@ class InsertSentimentPhrase(AbstractTransformation):
         }
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
+
+class InsertPositivePhrase(InsertSentimentPhrase):
+    """
+    Appends a sentiment-laden phrase to a string based on 
+    a pre-defined list of phrases.  
+    """
+
+    def __init__(self):
+        super().__init__(sentiment = 'positive')
+    def __call__(self, string):
+        phrase = sample(POSITIVE_PHRASES,1)[0]
+        ret = string + " " + phrase
+        return ret
+
+    def get_tran_types(self, task_name=None, tran_type=None):
+        self.tran_types = {
+            'task_name': ['sentiment', 'topic'],
+            'tran_type': ['SIB', 'INV']
+        }
+        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        return df
+
+class InsertNegativePhrase(InsertSentimentPhrase):
+    """
+    Appends a sentiment-laden phrase to a string based on 
+    a pre-defined list of phrases.  
+    """
+
+    def __init__(self):
+        super().__init__(sentiment = 'negative')
+    def __call__(self, string):
+        phrase = sample(NEGATIVE_PHRASES,1)[0]
+        ret = string + " " + phrase
+        return ret
+
+    def get_tran_types(self, task_name=None, tran_type=None):
+        self.tran_types = {
+            'task_name': ['sentiment', 'topic'],
+            'tran_type': ['SIB', 'INV']
+        }
+        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        return df

@@ -1,7 +1,7 @@
 from ..abstract_transformation import AbstractTransformation, _get_tran_types
 import numpy as np
 import en_core_web_sm
-from .data import NAMED_ENTITIES
+from ..data.locations import NAMED_ENTITIES
 
 class ChangeLocation(AbstractTransformation):
     """
@@ -9,24 +9,25 @@ class ChangeLocation(AbstractTransformation):
     """
 
     def __init__(self):
-        """Transforms an input by replacing names of recognized location entity.
+        """
+        Transforms an input by replacing names of recognized location entity.
         """
         self.nlp = en_core_web_sm.load()
     
-    def __call__(self, words):
+    def __call__(self, string):
         """
         Parameters
         ----------
-        word : str
+        string : str
             The input string
 
         Returns
         ----------
-        ret : str
+        newString : str
             The output with location names replaced
         """
-        doc = self.nlp(words)
-        newString = words
+        doc = self.nlp(string)
+        newString = string
         for e in reversed(doc.ents): #reversed to not modify the offsets of other entities when substituting
             start = e.start_char
             end = start + len(e.text)

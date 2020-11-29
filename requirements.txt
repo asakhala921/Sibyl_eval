@@ -1,0 +1,12 @@
+numpy
+pandas
+emoji_translate
+pattern
+spacy
+datasets
+
+# dev
+jupyter
+vaderSentiment
+
+# python -m spacy download en

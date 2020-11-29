@@ -1,7 +1,7 @@
 from ..abstract_transformation import AbstractTransformation, _get_tran_types
 import numpy as np
 import en_core_web_sm
-from .data import PERSON_NAMES
+from ..data.persons import PERSON_NAMES
 
 class ChangeName(AbstractTransformation):
     """
@@ -19,20 +19,20 @@ class ChangeName(AbstractTransformation):
         self.last_only = last_only
         self.nlp = en_core_web_sm.load()
     
-    def __call__(self, words):
+    def __call__(self, string):
         """
         Parameters
         ----------
-        word : str
+        string : str
             The input string
 
         Returns
         ----------
-        ret : str
+        newString : str
             The output with person names replaced
         """
-        doc = self.nlp(words)
-        newString = words
+        doc = self.nlp(string)
+        newString = string
         for e in reversed(doc.ents): #reversed to not modify the offsets of other entities when substituting
             start = e.start_char
             end = start + len(e.text)

@@ -68,3 +68,43 @@ class AddSentimentLink(AbstractTransformation):
         }
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
+
+class AddPositiveLink(AddSentimentLink):
+    def __init__(self):
+        super().__init__(url=None, sentiment='positive')
+    def __call__(self, string):
+        if self.default_url:
+            word = self.pos_words.sample(1)['word'].iloc[0]
+            link = 'https://www.dictionary.com/browse/' + word
+        else:
+            link = self.url
+        ret = string + ' ' + link
+        return ret
+
+    def get_tran_types(self, task_name=None, tran_type=None):
+        self.tran_types = {
+            'task_name': ['sentiment', 'topic'],
+            'tran_type': ['SIB', 'INV']
+        }
+        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        return df
+
+class AddNegativeLink(AddSentimentLink):
+    def __init__(self):
+        super().__init__(url=None, sentiment='negative')
+    def __call__(self, string):
+        if self.default_url:
+            word = self.neg_words.sample(1)['word'].iloc[0]
+            link = 'https://www.dictionary.com/browse/' + word
+        else:
+            link = self.url
+        ret = string + ' ' + link
+        return ret
+
+    def get_tran_types(self, task_name=None, tran_type=None):
+        self.tran_types = {
+            'task_name': ['sentiment', 'topic'],
+            'tran_type': ['SIB', 'INV']
+        }
+        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        return df
