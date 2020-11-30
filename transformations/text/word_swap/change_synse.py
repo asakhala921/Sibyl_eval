@@ -147,7 +147,7 @@ class ChangeAntonym(ChangeSynse):
         if tran_type == 'INV':
             y_ = y
         if tran_type == 'SIB':
-            y_ = 0 if y_ == 1 else 1
+            y_ = 0 if y == 1 else 1
         return X_, y_
 
 class ChangeHyponym(ChangeSynse):
