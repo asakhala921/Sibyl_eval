@@ -37,7 +37,9 @@ class Demojify(AbstractTransformation):
         ret : str
             The output with all emojis removed.
         """
-        return self.emo.demojify(string)
+        ret = self.emo.demojify(string)
+        assert type(ret) == str
+        return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {
@@ -48,8 +50,13 @@ class Demojify(AbstractTransformation):
         return df
 
     def transform_Xy(self, X, y):
-        print('Not implemented.')
-        return X, y
+        X_ = self(X)
+        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        if tran_type == 'INV':
+            y_ = y
+        if tran_type == 'SIB':
+            y_ = 0 if y == 1 else 1
+        return X_, y_
 
 class RemoveEmoji(Demojify):
     def __init__(self, polarity=[-1, 1]):
@@ -89,7 +96,9 @@ class RemoveEmoji(Demojify):
             The output with emojis in the target polarity
             range removed.
         """
-        return self.remove_emoji_by_polarity(string, self.polarity)
+        ret = self.remove_emoji_by_polarity(string, self.polarity)
+        assert type(ret) == str
+        return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
         pass
@@ -121,7 +130,9 @@ class RemovePositiveEmoji(RemoveEmoji):
         super().__init__(polarity=polarity) 
 
     def __call__(self, string):
-        return self.remove_emoji_by_polarity(string, self.polarity)
+        ret = self.remove_emoji_by_polarity(string, self.polarity)
+        assert type(ret) == str
+        return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {
@@ -145,7 +156,9 @@ class RemoveNegativeEmoji(RemoveEmoji):
         super().__init__(polarity=polarity) 
 
     def __call__(self, string):
-        return self.remove_emoji_by_polarity(string, self.polarity)
+        ret = self.remove_emoji_by_polarity(string, self.polarity)
+        assert type(ret) == str
+        return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {
@@ -169,7 +182,9 @@ class RemoveNeutralEmoji(RemoveEmoji):
         super().__init__(polarity=polarity) 
 
     def __call__(self, string):
-        return self.remove_emoji_by_polarity(string, self.polarity)
+        ret = self.remove_emoji_by_polarity(string, self.polarity)
+        assert type(ret) == str
+        return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {

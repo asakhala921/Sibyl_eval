@@ -68,6 +68,9 @@ class HomoglyphSwap(AbstractTransformation):
     
     def __call__(self, string):
         """
+        Returns a list containing all possible words with 1 character
+        replaced by a homoglyph.
+
         Parameters
         ----------
         string : str
@@ -78,19 +81,18 @@ class HomoglyphSwap(AbstractTransformation):
         ret : str
             The output with random words deleted
         """
-        """Returns a list containing all possible words with 1 character
-        replaced by a homoglyph."""
 
         # possibly = [k for k,j in enumerate(string) if j in self.homos]
         # indices = list(np.random.choice(possibly, int(np.ceil(self.change*len(string))), replace=False) )
                 # try, catch ValueError ? safer option
         indices = np.random.choice(len(string), int(np.ceil(self.change*len(string))), replace=False)
         
-        temp = string # deep coppy apparently 
+        temp = string # deep copy apparently 
         for i in sorted(indices):
             if string[i] in self.homos:
                 repl_letter = self.homos[string[i]]
                 temp = temp[:i] + repl_letter + string[i+1:]
+        assert type(temp) == str
         return temp
 
     def get_tran_types(self, task_name=None, tran_type=None):

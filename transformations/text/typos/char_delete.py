@@ -19,24 +19,25 @@ class RandomCharDel(AbstractTransformation):
         """
         self.task = task
         
-    def __call__(self, text, n=1):
+    def __call__(self, string, n=1):
         """
         Parameters
         ----------
-        word : str
+        string : str
             The input string
         n : int
             Number of chars to be transformed
 
         Returns
         ----------
-        ret : str
+        string : str
             The output with random chars deleted
         """
-        idx = sorted(np.random.choice(len(text), n, replace=False ))
+        idx = sorted(np.random.choice(len(string), n, replace=False ))
         for i in idx:
-            text = text[:i] + text[i+1:]
-        return text
+            string = string[:i] + string[i+1:]
+        assert type(string) == str
+        return string
 
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {

@@ -91,6 +91,7 @@ class RemoveNegation(AbstractTransformation):
             ret += doc[start:id_start].text + to_add
             start = id_end
         ret += doc[id_end:].text
+        assert type(ret) == str
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):

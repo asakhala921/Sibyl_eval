@@ -52,7 +52,7 @@ class RandomSwapQwerty(AbstractTransformation):
             "m": ["n", "j", "k"],
         }
     
-    def __call__(self, text, n=1):
+    def __call__(self, string, n=1):
         """
         Parameters
         ----------
@@ -66,11 +66,12 @@ class RandomSwapQwerty(AbstractTransformation):
         ret : str
             The output with random Substitutions
         """
-        assert n <= len(text), "n is too large. n should be <= "+str(len(text))
-        idx = sorted(np.random.choice(len(text), n, replace=False ))
+        assert n <= len(string), "n is too large. n should be <= "+str(len(string))
+        idx = sorted(np.random.choice(len(string), n, replace=False ))
         for i in idx:
-            text = text[:i] + get_adjacent_letter(text[i]) + text[i + 1 :]
-        return text
+            string = string[:i] + self.get_adjacent_letter(string[i]) + string[i + 1 :]   
+        assert type(string) == str
+        return string
 
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {
@@ -89,14 +90,14 @@ class RandomSwapQwerty(AbstractTransformation):
             y_ = 0 if y == 1 else 1
         return X_, y_
 
-def get_adjacent_letter(s):
-    s_lower = s.lower()
-    if s_lower in self.keyboard_adjacency:
-        adjacent_keys = self.keyboard_adjacency[s_lower]
-        if s.isupper():
-            ans = [key.upper() for key in adjacent_keys]
+    def get_adjacent_letter(self, s):
+        s_lower = s.lower()
+        if s_lower in self.keyboard_adjacency:
+            adjacent_keys = self.keyboard_adjacency[s_lower]
+            if s.isupper():
+                ans = [key.upper() for key in adjacent_keys]
+            else:
+                ans = adjacent_keys
         else:
-            ans = adjacent_keys
-    else:
-        return s
-    return np.random.choice(ans)
+            return s
+        return np.random.choice(ans)

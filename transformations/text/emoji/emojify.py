@@ -38,7 +38,9 @@ class Emojify(AbstractTransformation):
             The output with as many non-stopwords translated
             to emojis as possible.
         """
-        return self.emo.emojify(string)
+        ret = self.emo.emojify(string)
+        assert type(ret) == str
+        return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {
@@ -49,8 +51,13 @@ class Emojify(AbstractTransformation):
         return df
 
     def transform_Xy(self, X, y):
-        print('Not implemented.')
-        return X, y
+        X_ = self(X)
+        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        if tran_type == 'INV':
+            y_ = y
+        if tran_type == 'SIB':
+            y_ = 0 if y == 1 else 1
+        return X_, y_
 
 class AddEmoji(Emojify):
     def __init__(self, num=1, polarity=[-1, 1]):
@@ -93,7 +100,9 @@ class AddEmoji(Emojify):
         ret : str
             The output with `num` emojis appended
         """
-        return string + ' ' + ''.join(self.sample_emoji_by_polarity(self.polarity, self.num))
+        ret = string + ' ' + ''.join(self.sample_emoji_by_polarity(self.polarity, self.num))
+        assert type(ret) == str
+        return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
         pass
@@ -124,7 +133,9 @@ class AddPositiveEmoji(AddEmoji):
         self.polarity = polarity
 
     def __call__(self, string):
-        return string + ' ' + ''.join(self.sample_emoji_by_polarity(self.polarity, self.num))
+        ret = string + ' ' + ''.join(self.sample_emoji_by_polarity(self.polarity, self.num))
+        assert type(ret) == str
+        return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {
@@ -150,7 +161,9 @@ class AddNegativeEmoji(AddEmoji):
         self.polarity = polarity
 
     def __call__(self, string):
-        return string + ' ' + ''.join(self.sample_emoji_by_polarity(self.polarity, self.num))
+        ret = string + ' ' + ''.join(self.sample_emoji_by_polarity(self.polarity, self.num))
+        assert type(ret) == str
+        return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {
@@ -176,7 +189,9 @@ class AddNeutralEmoji(AddEmoji):
         self.polarity = polarity
 
     def __call__(self, string):
-        return string + ' ' + ''.join(self.sample_emoji_by_polarity(self.polarity, self.num))
+        ret = string + ' ' + ''.join(self.sample_emoji_by_polarity(self.polarity, self.num))
+        assert type(ret) == str
+        return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {

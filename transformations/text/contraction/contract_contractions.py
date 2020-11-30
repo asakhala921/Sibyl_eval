@@ -7,7 +7,7 @@ class ContractContractions(AbstractTransformation):
     returns the original string if none are found. 
     """
 
-    def __init__(self):
+    def __init__(self, task=None):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -18,7 +18,7 @@ class ContractContractions(AbstractTransformation):
             the type of task you wish to transform the
             input towards
         """
-        
+        self.task = task
         a = {
             'is not': "isn't", 'are not': "aren't", 'cannot': "can't",
             'could not': "couldn't", 'did not': "didn't", 'does not':
@@ -42,8 +42,8 @@ class ContractContractions(AbstractTransformation):
         }
         b = {"ain't": "isn't", "aren't": 'are not', "can't": 'cannot', "can't've": 'cannot have', "could've": 'could have', "couldn't": 'could not', "didn't": 'did not', "doesn't": 'does not', "don't": 'do not', "hadn't": 'had not', "hasn't": 'has not', "haven't": 'have not', "he'd": 'he would', "he'd've": 'he would have', "he'll": 'he will', "he's": 'he is', "how'd": 'how did', "how'd'y": 'how do you', "how'll": 'how will', "how's": 'how is', "I'd": 'I would', "I'll": 'I will', "I'm": 'I am', "I've": 'I have', "i'd": 'i would', "i'll": 'i will', "i'm": 'i am', "i've": 'i have', "isn't": 'is not', "it'd": 'it would', "it'll": 'it will', "it's": 'it is', "ma'am": 'madam', "might've": 'might have', "mightn't": 'might not', "must've": 'must have', "mustn't": 'must not', "needn't": 'need not', "oughtn't": 'ought not', "shan't": 'shall not', "she'd": 'she would', "she'll": 'she will', "she's": 'she is', "should've": 'should have', "shouldn't": 'should not', "that'd": 'that would', "that's": 'that is', "there'd": 'there would', "there's": 'there is', "they'd": 'they would', "they'll": 'they will', "they're": 'they are', "they've": 'they have', "wasn't": 'was not', "we'd": 'we would', "we'll": 'we will', "we're": 'we are', "we've": 'we have', "weren't": 'were not', "what're": 'what are', "what's": 'what is', "when's": 'when is', "where'd": 'where did', "where's": 'where is', "where've": 'where have', "who'll": 'who will', "who's": 'who is', "who've": 'who have', "why's": 'why is', "won't": 'will not', "would've": 'would have', "wouldn't": 'would not', "you'd": 'you would', "you'd've": 'you would have', "you'll": 'you will', "you're": 'you are', "you've": 'you have'}
         reverse_b = {v: k for k, v in b.items()}
-        self.reverse_contraction_map  = {**a, **reverse_b}
-    
+        self.reverse_contraction_map = {**a, **reverse_b}
+        
     def __call__(self, string):
         """Contracts contractions in a string (if any)
 
@@ -67,7 +67,9 @@ class ContractContractions(AbstractTransformation):
                 self.reverse_contraction_map.get(match.lower()))
             expanded_contraction = first_char + expanded_contraction[1:] + ' '
             return expanded_contraction
-        return reverse_contraction_pattern.sub(cont, string)
+        ret = reverse_contraction_pattern.sub(cont, string)
+        assert type(ret) == str
+        return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {

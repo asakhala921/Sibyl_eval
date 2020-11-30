@@ -58,9 +58,13 @@ class AddNegation(AbstractTransformation):
                 if '?' in sentence.text:
                     continue
                 if root.text.lower() in ['is', 'was', 'were', 'am', 'are', '\'s', '\'re', '\'m']:
-                    return doc[:root_id + 1].text + ' not ' + doc[root_id + 1:].text
+                    ret = doc[:root_id + 1].text + ' not ' + doc[root_id + 1:].text
+                    assert type(ret) == str
+                    return ret
                 else:
-                    return doc[:root_id].text + ' not ' + doc[root_id:].text
+                    ret = doc[:root_id].text + ' not ' + doc[root_id:].text
+                    assert type(ret) == str
+                    return ret
             else:
                 aux = [x for x in sentence if x.dep_ in ['aux', 'auxpass'] and x.head.i == root_id]
                 if aux:
@@ -76,8 +80,12 @@ class AddNegation(AbstractTransformation):
                         else:
                             fixed = doc[aux.i].text.rstrip('n') + 'n\'t' if lemma != 'will' else 'won\'t'
                         fixed = ' %s ' % fixed
-                        return doc[:aux.i].text + fixed + doc[aux.i + 1:].text
-                    return doc[:root_id].text + ' not ' + doc[root_id:].text
+                        ret = doc[:aux.i].text + fixed + doc[aux.i + 1:].text
+                        assert type(ret) == str
+                        return ret
+                    ret = doc[:root_id].text + ' not ' + doc[root_id:].text
+                    assert type(ret) == str
+                    return ret
                 else:
                     # TODO: does, do, etc. Remover return None de cima
                     subj = [x for x in sentence if x.dep_ in ['csubj', 'nsubj']]
@@ -97,7 +105,9 @@ class AddNegation(AbstractTransformation):
                     else:
                         do = 'not'
                         new_root = root.text
-                    return '%s %s %s %s' % (doc[:root_id].text, do, new_root,  doc[root_id + 1:].text)
+                    ret = '%s %s %s %s' % (doc[:root_id].text, do, new_root,  doc[root_id + 1:].text)
+                    assert type(ret) == str
+                    return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {

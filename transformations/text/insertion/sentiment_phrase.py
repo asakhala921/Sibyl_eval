@@ -46,6 +46,7 @@ class InsertSentimentPhrase(AbstractTransformation):
         if 'negative' in self.sentiment:
         	phrase = sample(NEGATIVE_PHRASES,1)[0]
         ret = string + " " + phrase
+        assert type(ret) == str
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -79,6 +80,7 @@ class InsertPositivePhrase(InsertSentimentPhrase):
     def __call__(self, string):
         phrase = sample(POSITIVE_PHRASES,1)[0]
         ret = string + " " + phrase
+        assert type(ret) == str
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -109,6 +111,7 @@ class InsertNegativePhrase(InsertSentimentPhrase):
     def __call__(self, string):
         phrase = sample(NEGATIVE_PHRASES,1)[0]
         ret = string + " " + phrase
+        assert type(ret) == str
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):

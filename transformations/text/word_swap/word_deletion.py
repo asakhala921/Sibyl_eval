@@ -51,7 +51,9 @@ class WordDeletion(AbstractTransformation):
             rand_int = random.randint(0, len(words)-1)
             return words[rand_int]
 
-        return " ".join(new_words)
+        ret = ' '.join(new_words)
+        assert type(ret) == str
+        return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {

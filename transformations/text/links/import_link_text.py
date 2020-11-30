@@ -45,6 +45,7 @@ class ImportLinkText(AbstractTransformation):
             url = match.group(0)
             return get_url_text(url)
         ret = self.URL_REGEX.sub(replace, string)
+        assert type(ret) == str
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):

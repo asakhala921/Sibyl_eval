@@ -78,9 +78,9 @@ class ExpandContractions(AbstractTransformation):
                 self.contraction_map.get(match.lower()))
             expanded_contraction = first_char + expanded_contraction[1:]
             return expanded_contraction
-
-        return contraction_pattern.sub(expand_match, string)
-    
+        ret = contraction_pattern.sub(expand_match, string)
+        assert type(ret) == str
+        return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {

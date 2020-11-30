@@ -40,7 +40,9 @@ class RandomInsertion(AbstractTransformation):
         new_words = words.split()
         for _ in range(self.n):
             add_word(new_words)
-        return ' '.join(new_words)
+        ret = ' '.join(new_words)
+        assert type(ret) == str
+        return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {

@@ -47,7 +47,8 @@ class ChangeNumber(AbstractTransformation):
         """
         doc = self.nlp(string)
         nums = [x.text for x in doc if x.text.isdigit()]
-        ret = []
+        if not nums:
+            return string
         for x in nums:
             # e.g. this is 4 you
             if x == '2' or x == '4':
@@ -57,8 +58,9 @@ class ChangeNumber(AbstractTransformation):
             else:
                 change = self.replacement
             sub_re = re.compile(r'\b%s\b' % x)
-            ret = sub_re.sub(str(change), doc.text)
-        return ret
+            string = sub_re.sub(str(change), doc.text)
+        assert type(string) == str
+        return string
 
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {

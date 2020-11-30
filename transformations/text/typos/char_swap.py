@@ -19,11 +19,11 @@ class RandomCharSwap(AbstractTransformation):
         """
         self.task = task
         
-    def __call__(self, text, n=1):
+    def __call__(self, string, n=1):
         """
         Parameters
         ----------
-        word : str
+        string : str
             The input string
         n : int
             Number of chars to be transformed
@@ -33,10 +33,11 @@ class RandomCharSwap(AbstractTransformation):
         ret : str
             The output with random chars pairs swapped
         """
-        idx = sorted(np.random.choice(len(text)-1, n, replace=False ))
+        idx = sorted(np.random.choice(len(string)-1, n, replace=False ))
         for i in idx:
-            text = text[:i] + text[i + 1] + text[i] + text[i + 2 :]
-        return text
+            string = string[:i] + string[i + 1] + string[i] + string[i + 2 :]
+        assert type(string) == str
+        return string
 
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {

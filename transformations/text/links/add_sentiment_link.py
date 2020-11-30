@@ -63,6 +63,7 @@ class AddSentimentLink(AbstractTransformation):
         else:
             link = self.url
         ret = string + ' ' + link
+        assert type(ret) == str
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -95,6 +96,7 @@ class AddPositiveLink(AddSentimentLink):
         else:
             link = self.url
         ret = string + ' ' + link
+        assert type(ret) == str
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -124,6 +126,7 @@ class AddNegativeLink(AddSentimentLink):
         else:
             link = self.url
         ret = string + ' ' + link
+        assert type(ret) == str
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):

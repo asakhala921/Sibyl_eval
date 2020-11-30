@@ -58,6 +58,7 @@ class ChangeName(AbstractTransformation):
                     name[0], name[-1] =  self._get_firstname() , self._get_lastname()
                 name = " ".join(name)
                 newString = newString[:start] + name + newString[end:]
+        assert type(newString) == str
         return newString
 
     def _get_lastname(self):

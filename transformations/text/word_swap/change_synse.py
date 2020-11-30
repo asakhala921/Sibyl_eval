@@ -84,6 +84,7 @@ class ChangeSynse(AbstractTransformation):
             if num_replaced >= self.num_to_replace:
                 break
         ret = ' '.join(new_words)
+        assert type(ret) == str
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -242,13 +243,13 @@ def all_possible_antonyms(word, pos=None):
                     ret.extend(s.senses)
     return clean_senses(ret)
 
-def all_possible_hypernyms(word, pos=None, depth=None):
+def all_possible_hypernyms(word, pos=None, depth=3):
     ret = []
     for syn in all_synsets(word, pos=pos):
         ret.extend([y for x in syn.hypernyms(recursive=True, depth=depth) for y in x.senses])
     return clean_senses(ret)
 
-def all_possible_hyponyms(word, pos=None, depth=None):
+def all_possible_hyponyms(word, pos=None, depth=3):
     ret = []
     for syn in all_synsets(word, pos=pos):
         ret.extend([y for x in syn.hyponyms(recursive=True, depth=depth) for y in x.senses])

@@ -46,6 +46,7 @@ class ChangeLocation(AbstractTransformation):
                 name[0] =  self._get_loc_name()
                 name = " ".join(name)
                 newString = newString[:start] + name + newString[end:]
+        assert type(newString) == str
         return newString
 
     def _get_loc_name(self):
