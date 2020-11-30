@@ -118,8 +118,7 @@ class RemoveEmoji(Demojify):
 
 class RemovePositiveEmoji(RemoveEmoji):
     def __init__(self, polarity=[0.05, 1]):
-        super().__init__(self) 
-        self.polarity = polarity
+        super().__init__(polarity=polarity) 
 
     def __call__(self, string):
         return self.remove_emoji_by_polarity(string, self.polarity)
@@ -143,8 +142,7 @@ class RemovePositiveEmoji(RemoveEmoji):
 
 class RemoveNegativeEmoji(RemoveEmoji):
     def __init__(self, polarity=[-1, -0.05]):
-        super().__init__(self) 
-        self.polarity = polarity
+        super().__init__(polarity=polarity) 
 
     def __call__(self, string):
         return self.remove_emoji_by_polarity(string, self.polarity)
@@ -168,8 +166,7 @@ class RemoveNegativeEmoji(RemoveEmoji):
 
 class RemoveNeutralEmoji(RemoveEmoji):
     def __init__(self, polarity=[-0.05, 0.05]):
-        super().__init__(self) 
-        self.polarity = polarity
+        super().__init__(polarity=polarity) 
 
     def __call__(self, string):
         return self.remove_emoji_by_polarity(string, self.polarity)

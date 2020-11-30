@@ -8,7 +8,7 @@ class ChangeLocation(AbstractTransformation):
     Changes Location names
     """
 
-    def __init__(self):
+    def __init__(self, task=None):
         """
         Transforms an input by replacing names of recognized 
         location entity.

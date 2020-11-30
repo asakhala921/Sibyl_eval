@@ -1,4 +1,4 @@
-from ..abstract_transformation import AbstractTransformation
+from ..abstract_transformation import AbstractTransformation, _get_tran_types
 import numpy as np
 
 class RandomSwapQwerty(AbstractTransformation):
@@ -6,7 +6,7 @@ class RandomSwapQwerty(AbstractTransformation):
     Substitues random chars
     """
 
-    def __init__(self):
+    def __init__(self, task=None):
         """
         A transformation that swaps characters with adjacent keys on a
         QWERTY keyboard, replicating the kind of errors that come from typing
