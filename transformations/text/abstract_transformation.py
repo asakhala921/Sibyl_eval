@@ -18,7 +18,7 @@ class AbstractTransformation(ABC):
     @abstractmethod
     def __call__(self, string):
         """
-        Apply the transformation using config as support
+        Apply the transformation to a string input
 
         Parameters
         ----------
@@ -28,7 +28,33 @@ class AbstractTransformation(ABC):
         pass
 
     @abstractmethod
+    def transform_Xy(self, X, y):
+        """
+        Apply the transformation to a string input 
+        and an int target label
+
+        Parameters
+        ----------
+        X : str
+            the input string
+        y : int
+            the target label
+
+        Returns
+        ----------
+        X_ : str
+            the transformed string
+        y_ : int
+            if SIB ==> transformed target label
+            if INV ==> the original target label
+        """
+        pass
+
+    @abstractmethod
     def get_tran_types(self, task_name=None, tran_type=None):
+        """
+        See _get_tran_types()
+        """
         pass
 
 

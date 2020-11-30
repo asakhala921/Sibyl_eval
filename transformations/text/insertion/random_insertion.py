@@ -8,7 +8,7 @@ class RandomInsertion(AbstractTransformation):
     Inserts random words
     """
 
-    def __init__(self, n=1):
+    def __init__(self, n=1, task=None):
         """
         Initializes the transformation
 
@@ -16,8 +16,12 @@ class RandomInsertion(AbstractTransformation):
         ----------
         n : int
             The number of random insertions to perform
+        task : str
+            the type of task you wish to transform the
+            input towards
         """
         self.n=n
+        self.task=task
     
     def __call__(self, words):
         """
@@ -45,6 +49,15 @@ class RandomInsertion(AbstractTransformation):
         }
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
+
+    def transform_Xy(self, X, y):
+        X_ = self(X)
+        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        if tran_type == 'INV':
+            y_ = y
+        if tran_type == 'SIB':
+            y_ = 0 if y == 1 else 1
+        return X_, y_
 
 def add_word(new_words):
     synonyms = []

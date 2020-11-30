@@ -6,7 +6,7 @@ class WordDeletion(AbstractTransformation):
     Deletes words from random indices in the string input
     """
 
-    def __init__(self, p=0.25):
+    def __init__(self, p=0.25, task=None):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -15,10 +15,14 @@ class WordDeletion(AbstractTransformation):
         ----------
         p : float
             Randomly delete words from the sentence with probability p
+        task : str
+            the type of task you wish to transform the
+            input towards
         """
         self.p = p
+        self.task = task
     
-    def __call__(self, words):
+    def __call__(self, string):
         """
         Parameters
         ----------
@@ -30,8 +34,8 @@ class WordDeletion(AbstractTransformation):
         ret : str
             The output with random words deleted
         """
-        words = words.split()
-        #obviously, if there's only one word, don't delete it
+        words = string.split()
+        # obviously, if there's only one word, don't delete it
         if len(words) == 1:
             return words
 
@@ -56,3 +60,12 @@ class WordDeletion(AbstractTransformation):
         }
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
+
+    def transform_Xy(self, X, y):
+        X_ = self(X)
+        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        if tran_type == 'INV':
+            y_ = y
+        if tran_type == 'SIB':
+            y_ = 0 if y == 1 else 1
+        return X_, y_

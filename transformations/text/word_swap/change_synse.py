@@ -13,7 +13,7 @@ class ChangeSynse(AbstractTransformation):
     with synses from wordnet. Also supports part-of-speech (pos)
     tagging via spaCy to get more natural replacements. 
     """
-    def __init__(self, synse='synonym', num_to_replace=-1):
+    def __init__(self, synse='synonym', num_to_replace=-1, task=None):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -28,6 +28,9 @@ class ChangeSynse(AbstractTransformation):
             The number of words randomly selected from the input 
             to replace with synonyms (excludes stop words).
             If -1, then replace as many as possible.
+        task : str
+            the type of task you wish to transform the
+            input towards
         """
         self.synse = synse
         self.synses = {
@@ -45,6 +48,7 @@ class ChangeSynse(AbstractTransformation):
         # stopwords 
         useful_stopwords = ['few', 'more', 'most', 'against']
         self.stopwords = [w for w in stopwords.words('english') if w not in useful_stopwords]
+        self.task = task
     
     def __call__(self, string):
         """Replaces words with synses
@@ -83,7 +87,20 @@ class ChangeSynse(AbstractTransformation):
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
+        print("Not implemented.")
         pass
+
+    def transform_Xy(self, X, y):
+        X_ = self(X)
+        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        if tran_type == 'INV':
+            y_ = y
+        if tran_type == 'SIB':
+            if self.synse == 'antonym':
+                y_ = 0 if y == 1 else 1
+            else:
+                y_ = y
+        return X_, y_
 
 class ChangeSynonym(ChangeSynse):
     def __init__(self, num_to_replace=-1):
@@ -100,6 +117,15 @@ class ChangeSynonym(ChangeSynse):
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
 
+    def transform_Xy(self, X, y):
+        X_ = self(X)
+        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        if tran_type == 'INV':
+            y_ = y
+        if tran_type == 'SIB':
+            y_ = y
+        return X_, y_
+
 class ChangeAntonym(ChangeSynse):
     def __init__(self, num_to_replace=-1):
         super().__init__(synse='antonym', num_to_replace=num_to_replace) 
@@ -114,6 +140,15 @@ class ChangeAntonym(ChangeSynse):
         }
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
+
+    def transform_Xy(self, X, y):
+        X_ = self(X)
+        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        if tran_type == 'INV':
+            y_ = y
+        if tran_type == 'SIB':
+            y_ = 0 if y_ == 1 else 1
+        return X_, y_
 
 class ChangeHyponym(ChangeSynse):
     def __init__(self, num_to_replace=-1):
@@ -130,6 +165,15 @@ class ChangeHyponym(ChangeSynse):
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
 
+    def transform_Xy(self, X, y):
+        X_ = self(X)
+        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        if tran_type == 'INV':
+            y_ = y
+        if tran_type == 'SIB':
+            y_ = y
+        return X_, y_
+
 class ChangeHypernym(ChangeSynse):
     def __init__(self, num_to_replace=-1):
         super().__init__(synse='hypernym', num_to_replace=num_to_replace) 
@@ -144,6 +188,15 @@ class ChangeHypernym(ChangeSynse):
         }
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
+
+    def transform_Xy(self, X, y):
+        X_ = self(X)
+        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        if tran_type == 'INV':
+            y_ = y
+        if tran_type == 'SIB':
+            y_ = y
+        return X_, y_
 
 def all_synsets(word, pos=None):
     pos_map = {

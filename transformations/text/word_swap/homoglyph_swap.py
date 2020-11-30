@@ -3,17 +3,24 @@ import random
 import numpy as np
 
 class HomoglyphSwap(AbstractTransformation):
-    """Transforms an input by replacing its words with visually similar words
-    using homoglyph swaps."""
-    def __init__(self, change=0.25):
+    """
+    Transforms an input by replacing its words with 
+    visually similar words using homoglyph swaps.
+    """
+    def __init__(self, change=0.25, task=None):
         """
         Initializes the transformation
 
         Parameters
         ----------
         change: float
-            tells how many of the charachters in string to possibly replace
-        warning: it will check change % or charachters for possible replacement
+            tells how many of the charachters in string 
+            to possibly replace
+            warning: it will check change % or charachters 
+            for possible replacement
+        task : str
+            the type of task you wish to transform the
+            input towards
         """
         self.homos = {
             "-": "˗",
@@ -56,7 +63,8 @@ class HomoglyphSwap(AbstractTransformation):
             "z": "ᴢ",
         }
         assert(0<=change<=1)
-        self.change= change
+        self.change = change
+        self.task = task
     
     def __call__(self, string):
         """
@@ -92,3 +100,12 @@ class HomoglyphSwap(AbstractTransformation):
         }
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
+
+    def transform_Xy(self, X, y):
+        X_ = self(X)
+        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        if tran_type == 'INV':
+            y_ = y
+        if tran_type == 'SIB':
+            y_ = 0 if y == 1 else 1
+        return X_, y_

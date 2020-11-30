@@ -11,43 +11,15 @@ class RandomSwapQwerty(AbstractTransformation):
         A transformation that swaps characters with adjacent keys on a
         QWERTY keyboard, replicating the kind of errors that come from typing
         too quickly.
-        """
-        pass
-    
-    def __call__(self, text, n=1):
-        """
+
         Parameters
         ----------
-        word : str
-            The input string
-        n : int
-            The number of random char Substitutions to perform
-
-        Returns
-        ----------
-        ret : str
-            The output with random Substitutions
+        task : str
+            the type of task you wish to transform the
+            input towards
         """
-        assert n <= len(text), "n is too large. n should be <= "+str(len(text))
-        idx = sorted(np.random.choice(len(text), n, replace=False ))
-        for i in idx:
-            text = text[:i] + get_adjacent_letter(text[i]) + text[i + 1 :]
-        return text
-
-def get_adjacent_letter(s):
-    s_lower = s.lower()
-    if s_lower in keyboard_adjacency:
-        adjacent_keys = keyboard_adjacency[s_lower]
-        if s.isupper():
-            ans = [key.upper() for key in adjacent_keys]
-        else:
-            ans = adjacent_keys
-    else:
-        return s
-    return np.random.choice(ans)
-
-
-keyboard_adjacency = {
+        self.task = task
+        self.keyboard_adjacency = {
             "q": [
                 "w",
                 "a",
@@ -79,4 +51,52 @@ keyboard_adjacency = {
             "n": ["b", "h", "j", "m"],
             "m": ["n", "j", "k"],
         }
+    
+    def __call__(self, text, n=1):
+        """
+        Parameters
+        ----------
+        word : str
+            The input string
+        n : int
+            The number of random char Substitutions to perform
 
+        Returns
+        ----------
+        ret : str
+            The output with random Substitutions
+        """
+        assert n <= len(text), "n is too large. n should be <= "+str(len(text))
+        idx = sorted(np.random.choice(len(text), n, replace=False ))
+        for i in idx:
+            text = text[:i] + get_adjacent_letter(text[i]) + text[i + 1 :]
+        return text
+
+    def get_tran_types(self, task_name=None, tran_type=None):
+        self.tran_types = {
+            'task_name': ['sentiment', 'topic'],
+            'tran_type': ['INV', 'INV']
+        }
+        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        return df
+
+    def transform_Xy(self, X, y):
+        X_ = self(X)
+        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        if tran_type == 'INV':
+            y_ = y
+        if tran_type == 'SIB':
+            y_ = 0 if y == 1 else 1
+        return X_, y_
+
+def get_adjacent_letter(s):
+    s_lower = s.lower()
+    if s_lower in self.keyboard_adjacency:
+        adjacent_keys = self.keyboard_adjacency[s_lower]
+        if s.isupper():
+            ans = [key.upper() for key in adjacent_keys]
+        else:
+            ans = adjacent_keys
+    else:
+        return s
+    return np.random.choice(ans)

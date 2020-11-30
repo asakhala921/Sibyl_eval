@@ -2,7 +2,7 @@ from ..abstract_transformation import AbstractTransformation, _get_tran_types
 from emoji_translate import Translator, emoji_lis
 
 class Demojify(AbstractTransformation):
-    def __init__(self, exact_match_only=False, randomize=True):
+    def __init__(self, exact_match_only=False, randomize=True, task=None):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -16,10 +16,14 @@ class Demojify(AbstractTransformation):
         randomize : boolean
             If true, randomizes approximate matches.
             If false, always picks the first match.
+        task : str
+            the type of task you wish to transform the
+            input towards
         """
         self.exact_match_only = exact_match_only
         self.randomize = randomize
         self.emo = Translator(self.exact_match_only, self.randomize)
+        self.task = task
 
     def __call__(self, string):
         """
@@ -43,6 +47,10 @@ class Demojify(AbstractTransformation):
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
 
+    def transform_Xy(self, X, y):
+        print('Not implemented.')
+        return X, y
+
 class RemoveEmoji(Demojify):
     def __init__(self, polarity=[-1, 1]):
         """
@@ -61,6 +69,12 @@ class RemoveEmoji(Demojify):
         """
         super().__init__(self) 
         self.polarity = polarity
+        if self.polarity[0] <= -0.05:
+            self.sentiment = 'negative'
+        elif self.polarity[0] >= 0.05:
+            self.sentiment = 'positive'
+        else:
+            self.sentiment = 'neutral'
 
     def __call__(self, string):
         """
@@ -88,6 +102,20 @@ class RemoveEmoji(Demojify):
                 string = string[:i] + '' + string[i + 1:].lstrip()
         return string.rstrip()
 
+    def transform_Xy(self, X, y):
+        X_ = self(X)
+        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        if tran_type == 'INV':
+            y_ = y
+        if tran_type == 'SIB':
+            if self.sentiment == 'positive':
+                y_ = 1
+            if self.sentiment == 'negative':
+                y_ = 0
+            if self.sentiment == 'neutral':
+                y_ = y
+        return X_, y_
+
 class RemovePositiveEmoji(RemoveEmoji):
     def __init__(self, polarity=[0.05, 1]):
         super().__init__(self) 
@@ -103,6 +131,15 @@ class RemovePositiveEmoji(RemoveEmoji):
         }
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
+
+    def transform_Xy(self, X, y):
+        X_ = self(X)
+        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        if tran_type == 'INV':
+            y_ = y
+        if tran_type == 'SIB':
+            y_ = 0
+        return X_, y_
 
 class RemoveNegativeEmoji(RemoveEmoji):
     def __init__(self, polarity=[-1, -0.05]):
@@ -120,6 +157,15 @@ class RemoveNegativeEmoji(RemoveEmoji):
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
 
+    def transform_Xy(self, X, y):
+        X_ = self(X)
+        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        if tran_type == 'INV':
+            y_ = y
+        if tran_type == 'SIB':
+            y_ = 1
+        return X_, y_
+
 class RemoveNeutralEmoji(RemoveEmoji):
     def __init__(self, polarity=[-0.05, 0.05]):
         super().__init__(self) 
@@ -135,3 +181,12 @@ class RemoveNeutralEmoji(RemoveEmoji):
         }
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
+
+    def transform_Xy(self, X, y):
+        X_ = self(X)
+        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        if tran_type == 'INV':
+            y_ = y
+        if tran_type == 'SIB':
+            y_ = y
+        return X_, y_

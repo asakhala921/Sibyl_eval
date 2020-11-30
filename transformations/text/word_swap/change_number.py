@@ -10,7 +10,7 @@ class ChangeNumber(AbstractTransformation):
     returns the original string if none are found. 
     """
 
-    def __init__(self, multiplier=0.2, replacement=None):
+    def __init__(self, multiplier=0.2, replacement=None, task=None):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -20,14 +20,17 @@ class ChangeNumber(AbstractTransformation):
         multiplier : float
             The value by which all numbers in the input
             string will be multiplied
-
         repalcement : float
             The value by which all numbers in the input
             string will be replaced (overrides multiplier)
+        task : str
+            the type of task you wish to transform the
+            input towards
         """
         self.multiplier = multiplier
         self.replacement = replacement
         self.nlp = en_core_web_sm.load()
+        self.task = task
     
     def __call__(self, string):
         """Contracts contractions in a string (if any)
@@ -64,3 +67,12 @@ class ChangeNumber(AbstractTransformation):
         }
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
+
+    def transform_Xy(self, X, y):
+        X_ = self(X)
+        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        if tran_type == 'INV':
+            y_ = y
+        if tran_type == 'SIB':
+            y_ = 0 if y == 1 else 1
+        return X_, y_

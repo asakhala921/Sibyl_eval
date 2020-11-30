@@ -10,7 +10,7 @@ class AddSentimentLink(AbstractTransformation):
     in routing structure. 
     """
 
-    def __init__(self, url=None, sentiment='positive'):
+    def __init__(self, url=None, sentiment='positive', task=None):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -21,7 +21,11 @@ class AddSentimentLink(AbstractTransformation):
         sentiment : str
             Determines whether the constructed URL will 
             feature a positive or negative sentiment.
+        task : str
+            the type of task you wish to transform the
+            input towards
         """
+        self.task = task
         self.url = url
         if self.url is None:
             self.url = 'https://www.dictionary.com/browse/'
@@ -69,6 +73,18 @@ class AddSentimentLink(AbstractTransformation):
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
 
+    def transform_Xy(self, X, y):
+        X_ = self(X)
+        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        if tran_type == 'INV':
+            y_ = y
+        if tran_type == 'SIB':
+            if self.sentiment == 'positive':
+                y_ = 1
+            if self.sentiment == 'negative':
+                y_ = 0
+        return X_, y_
+
 class AddPositiveLink(AddSentimentLink):
     def __init__(self):
         super().__init__(url=None, sentiment='positive')
@@ -89,6 +105,15 @@ class AddPositiveLink(AddSentimentLink):
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
 
+    def transform_Xy(self, X, y):
+        X_ = self(X)
+        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        if tran_type == 'INV':
+            y_ = y
+        if tran_type == 'SIB':
+            y_ = 1
+        return X_, y_
+
 class AddNegativeLink(AddSentimentLink):
     def __init__(self):
         super().__init__(url=None, sentiment='negative')
@@ -108,3 +133,12 @@ class AddNegativeLink(AddSentimentLink):
         }
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
+
+    def transform_Xy(self, X, y):
+        X_ = self(X)
+        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        if tran_type == 'INV':
+            y_ = y
+        if tran_type == 'SIB':
+            y_ = 0
+        return X_, y_

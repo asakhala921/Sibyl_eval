@@ -8,20 +8,24 @@ class RandomSwap(AbstractTransformation):
     Swaps random words
     """
 
-    def __init__(self, n=1):
+    def __init__(self, n=1, task=None):
         """
         Initializes the transformation
 
         Parameters
         ----------
+        task : str
+            the type of task you wish to transform the
+            input towards
         """
         self.n=n
+        self.task=task
     
-    def __call__(self, words):
+    def __call__(self, string):
         """
         Parameters
         ----------
-        word : str
+        string : str
             The input string
         n : int
             Number of word swaps
@@ -31,7 +35,7 @@ class RandomSwap(AbstractTransformation):
         ret : str
             The output with random words swapped
         """
-        new_words = (words).split()
+        new_words = (string).split()
         for _ in range(self.n):
             new_words = swap_word(new_words)
         return ' '.join(new_words)
@@ -43,6 +47,15 @@ class RandomSwap(AbstractTransformation):
         }
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
+
+    def transform_Xy(self, X, y):
+        X_ = self(X)
+        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        if tran_type == 'INV':
+            y_ = y
+        if tran_type == 'SIB':
+            y_ = 0 if y == 1 else 1
+        return X_, y_
 
 def swap_word(new_words):
 	random_idx_1 = random.randint(0, len(new_words)-1)
