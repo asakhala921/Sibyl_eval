@@ -40,6 +40,13 @@ class AddNegation(AbstractTransformation):
             Output with *all* negations added
 
         """
+        ans = self.wrapper(string)
+        if ans is None: ans = string
+        meta = {'change': string!=ans}
+        if self.metadata: return ans, meta
+        return ans
+
+    def wrapper(self, string):
         doc = self.nlp(string)
         for sentence in doc.sents:
             if len(sentence) < 3:
@@ -61,14 +68,10 @@ class AddNegation(AbstractTransformation):
                 if root.text.lower() in ['is', 'was', 'were', 'am', 'are', '\'s', '\'re', '\'m']:
                     ret = doc[:root_id + 1].text + ' not ' + doc[root_id + 1:].text
                     assert type(ret) == str
-                    meta = {'change': string!=ret}
-                    if self.metadata: return ret, meta
                     return ret
                 else:
                     ret = doc[:root_id].text + ' not ' + doc[root_id:].text
                     assert type(ret) == str
-                    meta = {'change': string!=ret}
-                    if self.metadata: return ret, meta
                     return ret
             else:
                 aux = [x for x in sentence if x.dep_ in ['aux', 'auxpass'] and x.head.i == root_id]
@@ -87,13 +90,9 @@ class AddNegation(AbstractTransformation):
                         fixed = ' %s ' % fixed
                         ret = doc[:aux.i].text + fixed + doc[aux.i + 1:].text
                         assert type(ret) == str
-                        meta = {'change': string!=ret}
-                        if self.metadata: return ret, meta
                         return ret
                     ret = doc[:root_id].text + ' not ' + doc[root_id:].text
                     assert type(ret) == str
-                    meta = {'change': string!=ret}
-                    if self.metadata: return ret, meta
                     return ret
                 else:
                     # TODO: does, do, etc. Remover return None de cima
@@ -116,8 +115,6 @@ class AddNegation(AbstractTransformation):
                         new_root = root.text
                     ret = '%s %s %s %s' % (doc[:root_id].text, do, new_root,  doc[root_id + 1:].text)
                     assert type(ret) == str
-                    meta = {'change': string!=ret}
-                    if self.metadata: return ret, meta
                     return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -136,4 +133,4 @@ class AddNegation(AbstractTransformation):
         if tran_type == 'SIB':
             y_ = 0 if y == 1 else 1
         if self.metadata: return X_[0], y_, X_[1]
-        return X_, y_
+        return X_, y_ 

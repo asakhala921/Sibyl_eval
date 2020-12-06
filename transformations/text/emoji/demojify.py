@@ -63,7 +63,7 @@ class Demojify(AbstractTransformation):
         return X_, y_
 
 class RemoveEmoji(Demojify):
-    def __init__(self, polarity=[-1, 1] meta=False):
+    def __init__(self, polarity=[-1, 1], meta=False):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -78,7 +78,7 @@ class RemoveEmoji(Demojify):
             - negative ==> [-1, -0.05] 
             - neutral ==> [-0.05, 0.05]
         """
-        super().__init__(self) 
+        super().__init__(self, meta=meta) 
         self.polarity = polarity
         if self.polarity[0] <= -0.05:
             self.sentiment = 'negative'
@@ -135,7 +135,7 @@ class RemoveEmoji(Demojify):
 
 class RemovePositiveEmoji(RemoveEmoji):
     def __init__(self, polarity=[0.05, 1],meta=False):
-        super().__init__(polarity=polarity) 
+        super().__init__(polarity=polarity, meta=meta) 
         self.metadata = meta
 
     def __call__(self, string):
@@ -165,7 +165,7 @@ class RemovePositiveEmoji(RemoveEmoji):
 
 class RemoveNegativeEmoji(RemoveEmoji):
     def __init__(self, polarity=[-1, -0.05], meta=False):
-        super().__init__(polarity=polarity)
+        super().__init__(polarity=polarity, meta=meta)
         self.metadata = meta 
 
     def __call__(self, string):
@@ -194,8 +194,8 @@ class RemoveNegativeEmoji(RemoveEmoji):
         return X_, y_
 
 class RemoveNeutralEmoji(RemoveEmoji):
-    def __init__(self, polarity=[-0.05, 0.05]):
-        super().__init__(polarity=polarity) 
+    def __init__(self, polarity=[-0.05, 0.05], meta=False):
+        super().__init__(polarity=polarity, meta=meta) 
         self.metadata = meta
 
     def __call__(self, string):

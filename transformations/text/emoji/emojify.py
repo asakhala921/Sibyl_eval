@@ -82,7 +82,7 @@ class AddEmoji(Emojify):
             - negative ==> [-1, -0.05] 
             - neutral ==> [-0.05, 0.05]
         """
-        super().__init__(self) 
+        super().__init__(self, meta=meta) 
         self.num = num
         self.polarity = polarity
         if self.polarity[0] <= -0.05:
@@ -136,7 +136,7 @@ class AddEmoji(Emojify):
 
 class AddPositiveEmoji(AddEmoji):
     def __init__(self, num=1, polarity=[0.05, 1], meta=False):
-        super().__init__(self) 
+        super().__init__(self, meta=meta) 
         self.num = num
         self.polarity = polarity
         self.metadata = meta
@@ -168,7 +168,7 @@ class AddPositiveEmoji(AddEmoji):
 
 class AddNegativeEmoji(AddEmoji):
     def __init__(self, num=1, polarity=[-1, -0.05], meta=False):
-        super().__init__(self) 
+        super().__init__(self, meta=meta) 
         self.num = num
         self.polarity = polarity
         self.metadata = meta
@@ -200,7 +200,7 @@ class AddNegativeEmoji(AddEmoji):
 
 class AddNeutralEmoji(AddEmoji):
     def __init__(self, num=1, polarity=[-0.05, 0.05], meta=False):
-        super().__init__(self) 
+        super().__init__(self, meta=meta) 
         self.num = num
         self.polarity = polarity
         self.metadata = meta
