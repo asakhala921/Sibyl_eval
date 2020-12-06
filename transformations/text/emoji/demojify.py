@@ -2,7 +2,7 @@ from ..abstract_transformation import AbstractTransformation, _get_tran_types
 from emoji_translate import Translator, emoji_lis
 
 class Demojify(AbstractTransformation):
-    def __init__(self, exact_match_only=False, randomize=True, task=None):
+    def __init__(self, exact_match_only=False, randomize=True, task=None, meta=False):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -24,6 +24,7 @@ class Demojify(AbstractTransformation):
         self.randomize = randomize
         self.emo = Translator(self.exact_match_only, self.randomize)
         self.task = task
+        self.metadata = meta
 
     def __call__(self, string):
         """
@@ -39,6 +40,8 @@ class Demojify(AbstractTransformation):
         """
         ret = self.emo.demojify(string)
         assert type(ret) == str
+        meta = {'change': string!=ret}
+        if self.metadata: return ret, meta
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -56,10 +59,11 @@ class Demojify(AbstractTransformation):
             y_ = y
         if tran_type == 'SIB':
             y_ = 0 if y == 1 else 1
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class RemoveEmoji(Demojify):
-    def __init__(self, polarity=[-1, 1]):
+    def __init__(self, polarity=[-1, 1] meta=False):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -82,6 +86,7 @@ class RemoveEmoji(Demojify):
             self.sentiment = 'positive'
         else:
             self.sentiment = 'neutral'
+        self.metadata = meta
 
     def __call__(self, string):
         """
@@ -98,6 +103,8 @@ class RemoveEmoji(Demojify):
         """
         ret = self.remove_emoji_by_polarity(string, self.polarity)
         assert type(ret) == str
+        meta = {'change': string!=ret}
+        if self.metadata: return ret, meta
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -123,15 +130,19 @@ class RemoveEmoji(Demojify):
                 y_ = 0
             if self.sentiment == 'neutral':
                 y_ = y
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class RemovePositiveEmoji(RemoveEmoji):
-    def __init__(self, polarity=[0.05, 1]):
+    def __init__(self, polarity=[0.05, 1],meta=False):
         super().__init__(polarity=polarity) 
+        self.metadata = meta
 
     def __call__(self, string):
         ret = self.remove_emoji_by_polarity(string, self.polarity)
         assert type(ret) == str
+        meta = {'change': string!=ret}
+        if self.metadata: return ret, meta
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -149,15 +160,19 @@ class RemovePositiveEmoji(RemoveEmoji):
             y_ = y
         if tran_type == 'SIB':
             y_ = 0
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class RemoveNegativeEmoji(RemoveEmoji):
-    def __init__(self, polarity=[-1, -0.05]):
-        super().__init__(polarity=polarity) 
+    def __init__(self, polarity=[-1, -0.05], meta=False):
+        super().__init__(polarity=polarity)
+        self.metadata = meta 
 
     def __call__(self, string):
         ret = self.remove_emoji_by_polarity(string, self.polarity)
         assert type(ret) == str
+        meta = {'change': string!=ret}
+        if self.metadata: return ret, meta
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -175,15 +190,19 @@ class RemoveNegativeEmoji(RemoveEmoji):
             y_ = y
         if tran_type == 'SIB':
             y_ = 1
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class RemoveNeutralEmoji(RemoveEmoji):
     def __init__(self, polarity=[-0.05, 0.05]):
         super().__init__(polarity=polarity) 
+        self.metadata = meta
 
     def __call__(self, string):
         ret = self.remove_emoji_by_polarity(string, self.polarity)
         assert type(ret) == str
+        meta = {'change': string!=ret}
+        if self.metadata: return ret, meta
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -201,4 +220,5 @@ class RemoveNeutralEmoji(RemoveEmoji):
             y_ = y
         if tran_type == 'SIB':
             y_ = y
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_

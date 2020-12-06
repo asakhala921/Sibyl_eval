@@ -8,7 +8,7 @@ class InsertSentimentPhrase(AbstractTransformation):
     a pre-defined list of phrases.  
     """
 
-    def __init__(self, sentiment='positive', task=None):
+    def __init__(self, sentiment='positive', task=None, meta=False):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -26,6 +26,7 @@ class InsertSentimentPhrase(AbstractTransformation):
         if self.sentiment.lower() not in ['positive', 'negative']:
             raise ValueError("Sentiment must be 'positive' or 'negative'.")
         self.task = task
+        self.metadata = meta
     
     def __call__(self, string):
         """
@@ -47,6 +48,8 @@ class InsertSentimentPhrase(AbstractTransformation):
         	phrase = sample(NEGATIVE_PHRASES,1)[0]
         ret = string + " " + phrase
         assert type(ret) == str
+        meta = {'change': string!=ret}
+        if self.metadata: return ret, meta
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -67,6 +70,7 @@ class InsertSentimentPhrase(AbstractTransformation):
                 y_ = 1
             if self.sentiment == 'negative':
                 y_ = 0
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class InsertPositivePhrase(InsertSentimentPhrase):
@@ -75,12 +79,15 @@ class InsertPositivePhrase(InsertSentimentPhrase):
     a pre-defined list of phrases.  
     """
 
-    def __init__(self):
+    def __init__(self, meta=False):
         super().__init__(sentiment = 'positive')
+        self.metadata = meta
     def __call__(self, string):
         phrase = sample(POSITIVE_PHRASES,1)[0]
         ret = string + " " + phrase
         assert type(ret) == str
+        meta = {'change': string!=ret}
+        if self.metadata: return ret, meta
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -98,6 +105,7 @@ class InsertPositivePhrase(InsertSentimentPhrase):
             y_ = y
         if tran_type == 'SIB':
             y_ = 1
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class InsertNegativePhrase(InsertSentimentPhrase):
@@ -106,12 +114,15 @@ class InsertNegativePhrase(InsertSentimentPhrase):
     a pre-defined list of phrases.  
     """
 
-    def __init__(self):
+    def __init__(self, meta=False):
         super().__init__(sentiment = 'negative')
+        self.metadata = meta
     def __call__(self, string):
         phrase = sample(NEGATIVE_PHRASES,1)[0]
         ret = string + " " + phrase
         assert type(ret) == str
+        meta = {'change': string!=ret}
+        if self.metadata: return ret, meta
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -129,4 +140,5 @@ class InsertNegativePhrase(InsertSentimentPhrase):
             y_ = y
         if tran_type == 'SIB':
             y_ = 0
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_

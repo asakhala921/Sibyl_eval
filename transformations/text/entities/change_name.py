@@ -8,7 +8,7 @@ class ChangeName(AbstractTransformation):
     Changes person names
     """
 
-    def __init__(self, first_only=False,last_only=False,task=None):
+    def __init__(self, first_only=False,last_only=False,task=None, meta=False):
         """
         Transforms an input by replacing names of recognized name entity.
 
@@ -28,6 +28,7 @@ class ChangeName(AbstractTransformation):
         self.last_only = last_only
         self.nlp = en_core_web_sm.load()
         self.task = task
+        self.metadata = meta
     
     def __call__(self, string):
         """
@@ -59,6 +60,8 @@ class ChangeName(AbstractTransformation):
                 name = " ".join(name)
                 newString = newString[:start] + name + newString[end:]
         assert type(newString) == str
+        meta = {'change': newString!=string}
+        if self.metadata: return newString, meta
         return newString
 
     def _get_lastname(self):
@@ -84,4 +87,5 @@ class ChangeName(AbstractTransformation):
             y_ = y
         if tran_type == 'SIB':
             y_ = 0 if y == 1 else 1
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_

@@ -8,7 +8,7 @@ class ChangeLocation(AbstractTransformation):
     Changes Location names
     """
 
-    def __init__(self, task=None):
+    def __init__(self, task=None, meta=False):
         """
         Transforms an input by replacing names of recognized 
         location entity.
@@ -21,6 +21,7 @@ class ChangeLocation(AbstractTransformation):
         """
         self.task = task
         self.nlp = en_core_web_sm.load()
+        self.metadata = meta
     
     def __call__(self, string):
         """
@@ -47,6 +48,8 @@ class ChangeLocation(AbstractTransformation):
                 name = " ".join(name)
                 newString = newString[:start] + name + newString[end:]
         assert type(newString) == str
+        meta = {'change': newString!=string}
+        if self.metadata: return newString, meta
         return newString
 
     def _get_loc_name(self):
@@ -69,4 +72,5 @@ class ChangeLocation(AbstractTransformation):
             y_ = y
         if tran_type == 'SIB':
             y_ = 0 if y == 1 else 1
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_

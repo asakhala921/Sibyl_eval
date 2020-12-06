@@ -6,7 +6,7 @@ class RandomCharInsert(AbstractTransformation):
     """
     Inserts random chars
     """
-    def __init__(self, task=None):
+    def __init__(self, task=None, meta=False):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -18,6 +18,7 @@ class RandomCharInsert(AbstractTransformation):
             input towards
         """
         self.task = task
+        self.metadata = meta
         
     def __call__(self, string, n=1):
         """
@@ -33,10 +34,13 @@ class RandomCharInsert(AbstractTransformation):
         string : str
             The output with random chars inserted
         """
+        original=string
         idx = sorted(np.random.choice(len(string), n, replace=False ))
         for i in idx:
             string = string[:i] + get_random_letter() + string[i:]
         assert type(string) == str
+        meta = {'change': string!=original}
+        if self.metadata: return string, meta
         return string
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -54,6 +58,7 @@ class RandomCharInsert(AbstractTransformation):
             y_ = y
         if tran_type == 'SIB':
             y_ = 0 if y == 1 else 1
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 def get_random_letter():

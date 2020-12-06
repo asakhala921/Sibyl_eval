@@ -10,7 +10,7 @@ class AddNegation(AbstractTransformation):
     Defines a transformation that negates a string.
     """
 
-    def __init__(self, task=None):
+    def __init__(self, task=None, meta=False):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -23,6 +23,7 @@ class AddNegation(AbstractTransformation):
         """
         self.task = task
         self.nlp = en_core_web_sm.load()
+        self.metadata = meta
     
     def __call__(self, string):
         """Adds negation to a string by first 
@@ -60,10 +61,14 @@ class AddNegation(AbstractTransformation):
                 if root.text.lower() in ['is', 'was', 'were', 'am', 'are', '\'s', '\'re', '\'m']:
                     ret = doc[:root_id + 1].text + ' not ' + doc[root_id + 1:].text
                     assert type(ret) == str
+                    meta = {'change': string!=ret}
+                    if self.metadata: return ret, meta
                     return ret
                 else:
                     ret = doc[:root_id].text + ' not ' + doc[root_id:].text
                     assert type(ret) == str
+                    meta = {'change': string!=ret}
+                    if self.metadata: return ret, meta
                     return ret
             else:
                 aux = [x for x in sentence if x.dep_ in ['aux', 'auxpass'] and x.head.i == root_id]
@@ -82,9 +87,13 @@ class AddNegation(AbstractTransformation):
                         fixed = ' %s ' % fixed
                         ret = doc[:aux.i].text + fixed + doc[aux.i + 1:].text
                         assert type(ret) == str
+                        meta = {'change': string!=ret}
+                        if self.metadata: return ret, meta
                         return ret
                     ret = doc[:root_id].text + ' not ' + doc[root_id:].text
                     assert type(ret) == str
+                    meta = {'change': string!=ret}
+                    if self.metadata: return ret, meta
                     return ret
                 else:
                     # TODO: does, do, etc. Remover return None de cima
@@ -107,6 +116,8 @@ class AddNegation(AbstractTransformation):
                         new_root = root.text
                     ret = '%s %s %s %s' % (doc[:root_id].text, do, new_root,  doc[root_id + 1:].text)
                     assert type(ret) == str
+                    meta = {'change': string!=ret}
+                    if self.metadata: return ret, meta
                     return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -124,4 +135,5 @@ class AddNegation(AbstractTransformation):
             y_ = y
         if tran_type == 'SIB':
             y_ = 0 if y == 1 else 1
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_

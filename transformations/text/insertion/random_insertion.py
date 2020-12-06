@@ -8,7 +8,7 @@ class RandomInsertion(AbstractTransformation):
     Inserts random words
     """
 
-    def __init__(self, n=1, task=None):
+    def __init__(self, n=1, task=None, meta=False):
         """
         Initializes the transformation
 
@@ -22,6 +22,7 @@ class RandomInsertion(AbstractTransformation):
         """
         self.n=n
         self.task=task
+        self.metadata = meta
     
     def __call__(self, words):
         """
@@ -42,6 +43,8 @@ class RandomInsertion(AbstractTransformation):
             add_word(new_words)
         ret = ' '.join(new_words)
         assert type(ret) == str
+        meta = {'change': words!=ret}
+        if self.metadata: return ret, meta
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -59,6 +62,7 @@ class RandomInsertion(AbstractTransformation):
             y_ = y
         if tran_type == 'SIB':
             y_ = 0 if y == 1 else 1
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 def add_word(new_words):

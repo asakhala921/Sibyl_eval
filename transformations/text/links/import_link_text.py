@@ -12,7 +12,7 @@ class ImportLinkText(AbstractTransformation):
     in routing structure. 
     """
 
-    def __init__(self, task=None):
+    def __init__(self, task=None, meta=False):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -26,6 +26,7 @@ class ImportLinkText(AbstractTransformation):
         self.task = task
         # https://gist.github.com/uogbuji/705383#gistcomment-2250605
         self.URL_REGEX = re.compile(r'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
+        self.metadata = meta
     
     def __call__(self, string):
         """
@@ -46,6 +47,8 @@ class ImportLinkText(AbstractTransformation):
             return get_url_text(url)
         ret = self.URL_REGEX.sub(replace, string)
         assert type(ret) == str
+        meta = {'change': string!=ret}
+        if self.metadata: return ret, meta
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -63,6 +66,7 @@ class ImportLinkText(AbstractTransformation):
             y_ = y
         if tran_type == 'SIB':
             y_ = 0 if y == 1 else 1
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 def tag_visible(element):

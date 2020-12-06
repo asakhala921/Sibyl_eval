@@ -13,7 +13,7 @@ class ChangeSynse(AbstractTransformation):
     with synses from wordnet. Also supports part-of-speech (pos)
     tagging via spaCy to get more natural replacements. 
     """
-    def __init__(self, synse='synonym', num_to_replace=-1, task=None):
+    def __init__(self, synse='synonym', num_to_replace=-1, task=None, meta=False):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -49,6 +49,7 @@ class ChangeSynse(AbstractTransformation):
         useful_stopwords = ['few', 'more', 'most', 'against']
         self.stopwords = [w for w in stopwords.words('english') if w not in useful_stopwords]
         self.task = task
+        self.metadata = meta
     
     def __call__(self, string):
         """Replaces words with synses
@@ -85,6 +86,8 @@ class ChangeSynse(AbstractTransformation):
                 break
         ret = ' '.join(new_words)
         assert type(ret) == str
+        meta = {'change': string!=ret}
+        if self.metadata: return ret, meta
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -101,11 +104,13 @@ class ChangeSynse(AbstractTransformation):
                 y_ = 0 if y == 1 else 1
             else:
                 y_ = y
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class ChangeSynonym(ChangeSynse):
-    def __init__(self, num_to_replace=-1):
-        super().__init__(synse='synonym', num_to_replace=num_to_replace) 
+    def __init__(self, num_to_replace=-1, meta=False):
+        super().__init__(synse='synonym', num_to_replace=num_to_replace ,meta=meta)
+        self.metadata = meta 
 
     def __call__(self, string):
         return super().__call__(string)
@@ -125,11 +130,13 @@ class ChangeSynonym(ChangeSynse):
             y_ = y
         if tran_type == 'SIB':
             y_ = y
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class ChangeAntonym(ChangeSynse):
-    def __init__(self, num_to_replace=-1):
-        super().__init__(synse='antonym', num_to_replace=num_to_replace) 
+    def __init__(self, num_to_replace=-1, meta=False):
+        super().__init__(synse='antonym', num_to_replace=num_to_replace,meta=meta)
+        self.metadata = meta
 
     def __call__(self, string):
         return super().__call__(string)
@@ -149,11 +156,13 @@ class ChangeAntonym(ChangeSynse):
             y_ = y
         if tran_type == 'SIB':
             y_ = 0 if y == 1 else 1
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class ChangeHyponym(ChangeSynse):
-    def __init__(self, num_to_replace=-1):
-        super().__init__(synse='hyponym', num_to_replace=num_to_replace) 
+    def __init__(self, num_to_replace=-1, meta=False):
+        super().__init__(synse='hyponym', num_to_replace=num_to_replace,meta=meta) 
+        self.metadata = meta
 
     def __call__(self, string):
         return super().__call__(string)
@@ -173,11 +182,13 @@ class ChangeHyponym(ChangeSynse):
             y_ = y
         if tran_type == 'SIB':
             y_ = y
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class ChangeHypernym(ChangeSynse):
-    def __init__(self, num_to_replace=-1):
-        super().__init__(synse='hypernym', num_to_replace=num_to_replace) 
+    def __init__(self, num_to_replace=-1, meta=False):
+        super().__init__(synse='hypernym', num_to_replace=num_to_replace,meta=meta) 
+        self.metadata = meta
 
     def __call__(self, string):
         return super().__call__(string)
@@ -197,6 +208,7 @@ class ChangeHypernym(ChangeSynse):
             y_ = y
         if tran_type == 'SIB':
             y_ = y
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 def all_synsets(word, pos=None):

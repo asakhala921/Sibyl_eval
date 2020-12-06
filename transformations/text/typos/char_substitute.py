@@ -6,7 +6,7 @@ class RandomCharSubst(AbstractTransformation):
     """
     Substitues random chars
     """
-    def __init__(self, task=None):
+    def __init__(self, task=None, meta=False):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -18,6 +18,7 @@ class RandomCharSubst(AbstractTransformation):
             input towards
         """
         self.task = task
+        self.metadata = meta
     
     def __call__(self, text, n=1):
         """
@@ -38,6 +39,8 @@ class RandomCharSubst(AbstractTransformation):
         temp = text
         for i in idx:
             temp = temp[:i] + get_random_letter() + temp[i + 1 :]
+        meta = {'change': temp!=text}
+        if self.metadata: return temp, meta
         return temp
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -55,6 +58,7 @@ class RandomCharSubst(AbstractTransformation):
             y_ = y
         if tran_type == 'SIB':
             y_ = 0 if y == 1 else 1
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 def get_random_letter():

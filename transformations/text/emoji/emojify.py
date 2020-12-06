@@ -2,7 +2,7 @@ from ..abstract_transformation import AbstractTransformation, _get_tran_types
 from emoji_translate import Translator
 
 class Emojify(AbstractTransformation):
-    def __init__(self, exact_match_only=False, randomize=True, task=None):
+    def __init__(self, exact_match_only=False, randomize=True, task=None, meta=False):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -24,6 +24,7 @@ class Emojify(AbstractTransformation):
         self.randomize = randomize
         self.emo = Translator(self.exact_match_only, self.randomize)
         self.task = task
+        self.metadata = meta
 
     def __call__(self, string):
         """
@@ -40,6 +41,8 @@ class Emojify(AbstractTransformation):
         """
         ret = self.emo.emojify(string)
         assert type(ret) == str
+        meta = {'change': string!=ret}
+        if self.metadata: return ret, meta
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -57,10 +60,11 @@ class Emojify(AbstractTransformation):
             y_ = y
         if tran_type == 'SIB':
             y_ = 0 if y == 1 else 1
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class AddEmoji(Emojify):
-    def __init__(self, num=1, polarity=[-1, 1]):
+    def __init__(self, num=1, polarity=[-1, 1], meta=False):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -87,6 +91,7 @@ class AddEmoji(Emojify):
             self.sentiment = 'positive'
         else:
             self.sentiment = 'neutral'
+        self.metadata = meta
 
     def __call__(self, string):
         """
@@ -102,6 +107,8 @@ class AddEmoji(Emojify):
         """
         ret = string + ' ' + ''.join(self.sample_emoji_by_polarity(self.polarity, self.num))
         assert type(ret) == str
+        meta = {'change': string!=ret}
+        if self.metadata: return ret, meta
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -124,17 +131,21 @@ class AddEmoji(Emojify):
                 y_ = 0
             if self.sentiment == 'neutral':
                 y_ = y
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class AddPositiveEmoji(AddEmoji):
-    def __init__(self, num=1, polarity=[0.05, 1]):
+    def __init__(self, num=1, polarity=[0.05, 1], meta=False):
         super().__init__(self) 
         self.num = num
         self.polarity = polarity
+        self.metadata = meta
 
     def __call__(self, string):
         ret = string + ' ' + ''.join(self.sample_emoji_by_polarity(self.polarity, self.num))
         assert type(ret) == str
+        meta = {'change': string!=ret}
+        if self.metadata: return ret, meta
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -152,17 +163,21 @@ class AddPositiveEmoji(AddEmoji):
             y_ = y
         if tran_type == 'SIB':
             y_ = 1
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class AddNegativeEmoji(AddEmoji):
-    def __init__(self, num=1, polarity=[-1, -0.05]):
+    def __init__(self, num=1, polarity=[-1, -0.05], meta=False):
         super().__init__(self) 
         self.num = num
         self.polarity = polarity
+        self.metadata = meta
 
     def __call__(self, string):
         ret = string + ' ' + ''.join(self.sample_emoji_by_polarity(self.polarity, self.num))
         assert type(ret) == str
+        meta = {'change': string!=ret}
+        if self.metadata: return ret, meta
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -180,17 +195,21 @@ class AddNegativeEmoji(AddEmoji):
             y_ = y
         if tran_type == 'SIB':
             y_ = 0
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class AddNeutralEmoji(AddEmoji):
-    def __init__(self, num=1, polarity=[-0.05, 0.05]):
+    def __init__(self, num=1, polarity=[-0.05, 0.05], meta=False):
         super().__init__(self) 
         self.num = num
         self.polarity = polarity
+        self.metadata = meta
 
     def __call__(self, string):
         ret = string + ' ' + ''.join(self.sample_emoji_by_polarity(self.polarity, self.num))
         assert type(ret) == str
+        meta = {'change': string!=ret}
+        if self.metadata: return ret, meta
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -208,4 +227,5 @@ class AddNeutralEmoji(AddEmoji):
             y_ = y
         if tran_type == 'SIB':
             y_ = y
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_

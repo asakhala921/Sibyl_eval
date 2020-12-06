@@ -7,7 +7,7 @@ class HomoglyphSwap(AbstractTransformation):
     Transforms an input by replacing its words with 
     visually similar words using homoglyph swaps.
     """
-    def __init__(self, change=0.25, task=None):
+    def __init__(self, change=0.25, task=None, meta=False):
         """
         Initializes the transformation
 
@@ -65,6 +65,7 @@ class HomoglyphSwap(AbstractTransformation):
         assert(0<=change<=1)
         self.change = change
         self.task = task
+        self.metadata = meta
     
     def __call__(self, string):
         """
@@ -93,6 +94,8 @@ class HomoglyphSwap(AbstractTransformation):
                 repl_letter = self.homos[string[i]]
                 temp = temp[:i] + repl_letter + string[i+1:]
         assert type(temp) == str
+        meta = {'change': string!=temp}
+        if self.metadata: return temp, meta
         return temp
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -110,4 +113,5 @@ class HomoglyphSwap(AbstractTransformation):
             y_ = y
         if tran_type == 'SIB':
             y_ = 0 if y == 1 else 1
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_

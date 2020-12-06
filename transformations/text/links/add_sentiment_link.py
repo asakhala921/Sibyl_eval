@@ -10,7 +10,7 @@ class AddSentimentLink(AbstractTransformation):
     in routing structure. 
     """
 
-    def __init__(self, url=None, sentiment='positive', task=None):
+    def __init__(self, url=None, sentiment='positive', task=None, meta=False):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -41,6 +41,7 @@ class AddSentimentLink(AbstractTransformation):
         neg_path = os.path.join(cur_path, '../data/opinion-lexicon-English/negative-words.txt')
         self.pos_words = pd.read_csv(pos_path, skiprows=30, names=['word'], encoding='latin-1')
         self.neg_words = pd.read_csv(neg_path, skiprows=30, names=['word'], encoding='latin-1')
+        self.metadata = meta
     
     def __call__(self, string):
         """
@@ -64,6 +65,8 @@ class AddSentimentLink(AbstractTransformation):
             link = self.url
         ret = string + ' ' + link
         assert type(ret) == str
+        meta = {'change': string!=ret}
+        if self.metadata: return ret, meta
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -84,11 +87,13 @@ class AddSentimentLink(AbstractTransformation):
                 y_ = 1
             if self.sentiment == 'negative':
                 y_ = 0
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class AddPositiveLink(AddSentimentLink):
-    def __init__(self):
+    def __init__(self, meta=False):
         super().__init__(url=None, sentiment='positive')
+        self.metadata = meta
     def __call__(self, string):
         if self.default_url:
             word = self.pos_words.sample(1)['word'].iloc[0]
@@ -97,6 +102,8 @@ class AddPositiveLink(AddSentimentLink):
             link = self.url
         ret = string + ' ' + link
         assert type(ret) == str
+        meta = {'change': string!=ret}
+        if self.metadata: return ret, meta
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -114,11 +121,13 @@ class AddPositiveLink(AddSentimentLink):
             y_ = y
         if tran_type == 'SIB':
             y_ = 1
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class AddNegativeLink(AddSentimentLink):
-    def __init__(self):
+    def __init__(self, meta=False):
         super().__init__(url=None, sentiment='negative')
+        self.metadata = meta
     def __call__(self, string):
         if self.default_url:
             word = self.neg_words.sample(1)['word'].iloc[0]
@@ -127,6 +136,8 @@ class AddNegativeLink(AddSentimentLink):
             link = self.url
         ret = string + ' ' + link
         assert type(ret) == str
+        meta = {'change': string!=ret}
+        if self.metadata: return ret, meta
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -144,4 +155,5 @@ class AddNegativeLink(AddSentimentLink):
             y_ = y
         if tran_type == 'SIB':
             y_ = 0
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_

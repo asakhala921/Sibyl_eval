@@ -10,7 +10,7 @@ class ChangeNumber(AbstractTransformation):
     returns the original string if none are found. 
     """
 
-    def __init__(self, multiplier=0.2, replacement=None, task=None):
+    def __init__(self, multiplier=0.2, replacement=None, task=None, meta=False):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -31,6 +31,7 @@ class ChangeNumber(AbstractTransformation):
         self.replacement = replacement
         self.nlp = en_core_web_sm.load()
         self.task = task
+        self.metadata = meta
     
     def __call__(self, string):
         """Contracts contractions in a string (if any)
@@ -45,9 +46,12 @@ class ChangeNumber(AbstractTransformation):
         ret
             String with contractions expanded (if any)
         """
+        original=string
         doc = self.nlp(string)
         nums = [x.text for x in doc if x.text.isdigit()]
         if not nums:
+            meta = {'change': string!=original}
+            if self.metadata: return string, meta
             return string
         for x in nums:
             # e.g. this is 4 you
@@ -60,6 +64,8 @@ class ChangeNumber(AbstractTransformation):
             sub_re = re.compile(r'\b%s\b' % x)
             string = sub_re.sub(str(change), doc.text)
         assert type(string) == str
+        meta = {'change': string!=original}
+        if self.metadata: return string, meta
         return string
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -77,4 +83,5 @@ class ChangeNumber(AbstractTransformation):
             y_ = y
         if tran_type == 'SIB':
             y_ = 0 if y == 1 else 1
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_

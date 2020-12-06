@@ -11,7 +11,7 @@ class RemoveNegation(AbstractTransformation):
     original string unchanged. 
     """
 
-    def __init__(self, task=None):
+    def __init__(self, task=None, meta=False):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -24,6 +24,7 @@ class RemoveNegation(AbstractTransformation):
         """
         self.task = task
         self.nlp = en_core_web_sm.load()
+        self.metadata = meta
     
     def __call__(self, string):
         """Removes negation from a string by first 
@@ -52,6 +53,8 @@ class RemoveNegation(AbstractTransformation):
             new.append(notz)
         notzs = new
         if not notzs:
+            meta = {'change': False}
+            if self.metadata: return string, meta
             return string
         ret = ''
         start = 0
@@ -92,6 +95,8 @@ class RemoveNegation(AbstractTransformation):
             start = id_end
         ret += doc[id_end:].text
         assert type(ret) == str
+        meta = {'change': string!=ret}
+        if self.metadata: return ret, meta
         return ret
 
     def get_tran_types(self, task_name=None, tran_type=None):
@@ -109,4 +114,5 @@ class RemoveNegation(AbstractTransformation):
             y_ = y
         if tran_type == 'SIB':
             y_ = 0 if y == 1 else 1
+        if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
