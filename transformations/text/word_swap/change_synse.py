@@ -144,7 +144,7 @@ class ChangeAntonym(ChangeSynse):
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {
             'task_name': ['sentiment', 'topic'],
-            'tran_type': ['SIB', 'SIB']
+            'tran_type': ['SIB', 'INV']
         }
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
@@ -170,7 +170,7 @@ class ChangeHyponym(ChangeSynse):
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {
             'task_name': ['sentiment', 'topic'],
-            'tran_type': ['INV', 'SIB']
+            'tran_type': ['INV', 'INV']
         }
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
@@ -196,7 +196,7 @@ class ChangeHypernym(ChangeSynse):
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {
             'task_name': ['sentiment', 'topic'],
-            'tran_type': ['INV', 'SIB']
+            'tran_type': ['INV', 'INV']
         }
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
