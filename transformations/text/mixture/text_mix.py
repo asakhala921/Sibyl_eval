@@ -24,7 +24,7 @@ def word_shuffle(string):
     np.random.shuffle(X)
     return ' '.join(X)
 
-class TextCat(AbstractBatchTransformation):
+class TextMix(AbstractBatchTransformation):
     """
     Concatenates two texts together and interpolates 
     the labels
@@ -68,7 +68,7 @@ class TextCat(AbstractBatchTransformation):
         shuffled_targets = targets[indices]
 
         # concatenate data
-        textcat = concat_text(data, shuffled_data)
+        textmix = concat_text(data, shuffled_data)
 
         # create soft target labels by first
         # one-hot-encoding targets if necessary
@@ -96,7 +96,7 @@ class TextCat(AbstractBatchTransformation):
 
         ohe_targets = ohe_target1 + ohe_target2
 
-        ret = (textcat, ohe_targets)
+        ret = (textmix, ohe_targets)
 
         # metadata
         if self.metadata: 
@@ -156,11 +156,11 @@ class SentMix(AbstractBatchTransformation):
         shuffled_targets = targets[indices]
 
         # concatenate data
-        textcat = concat_text(data, shuffled_data)
+        textmix = concat_text(data, shuffled_data)
 
         # mix sentences
         sent_shuffle_ = np.vectorize(sent_shuffle)
-        sentmix = np.apply_along_axis(sent_shuffle_, 0, textcat)
+        sentmix = np.apply_along_axis(sent_shuffle_, 0, textmix)
 
         # create soft target labels by first
         # one-hot-encoding targets if necessary
@@ -248,11 +248,11 @@ class WordMix(AbstractBatchTransformation):
         shuffled_targets = targets[indices]
 
         # concatenate data
-        textcat = concat_text(data, shuffled_data)
+        textmix = concat_text(data, shuffled_data)
 
         # mix words
         word_shuffle_ = np.vectorize(word_shuffle)
-        wordmix = np.apply_along_axis(word_shuffle_, 0, textcat)
+        wordmix = np.apply_along_axis(word_shuffle_, 0, textmix)
 
         # create soft target labels by first
         # one-hot-encoding targets if necessary

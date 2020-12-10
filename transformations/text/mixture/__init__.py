@@ -1,5 +1,5 @@
 __all__ = [
-	'TextCat',
+	'TextMix',
 	'SentMix',
 	'WordMix'
 ]
