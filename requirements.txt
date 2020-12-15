@@ -4,9 +4,12 @@ emoji_translate
 pattern
 spacy
 datasets
+transformers
 
 # dev
 jupyter
 vaderSentiment
 
 # python -m spacy download en
+# conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
+# conda install pytorch torchvision torchaudio cpuonly -c pytorch
