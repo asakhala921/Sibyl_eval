@@ -67,12 +67,11 @@ class ChangeSynse(AbstractTransformation):
         doc = self.nlp(string)
         new_words = string.split(' ').copy()
         random_word_list = list(set(
-            [word for word in new_words if strip_punct(word.lower()) not in self.stopwords]))
+            [token.text for token in doc if strip_punct(token.text.lower()) not in self.stopwords]))
         random.shuffle(random_word_list)
         num_replaced = 0
         for random_word in random_word_list:
-            idx = new_words.index(random_word)
-            pos = doc[idx].pos_
+            pos = [token.pos_ for token in doc if random_word in token.text][0]
             if pos in ['PROPN']:
                 continue
             if pos not in ['NOUN', 'VERB', 'ADJ', 'ADV']:

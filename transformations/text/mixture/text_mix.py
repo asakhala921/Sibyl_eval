@@ -61,6 +61,9 @@ class TextMix(AbstractBatchTransformation):
             if requested.
         """
         data, targets = batch
+        if type(data) == list:
+            data = np.array(data, dtype=np.string_)
+            targets = np.array(targets)
 
         # shuffle data, targets
         indices = np.random.permutation(len(data))
@@ -107,7 +110,7 @@ class TextMix(AbstractBatchTransformation):
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {
             'task_name': ['sentiment', 'topic'],
-            'tran_type': ['SIB', 'SIB']
+            'tran_type': ['SIB-mix', 'SIB-mix']
         }
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
@@ -149,6 +152,9 @@ class SentMix(AbstractBatchTransformation):
             if requested.
         """
         data, targets = batch
+        if type(data) == list:
+            data = np.array(data, dtype=np.string_)
+            targets = np.array(targets)
 
         # shuffle data, targets
         indices = np.random.permutation(len(data))
@@ -199,7 +205,7 @@ class SentMix(AbstractBatchTransformation):
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {
             'task_name': ['sentiment', 'topic'],
-            'tran_type': ['SIB', 'SIB']
+            'tran_type': ['SIB-mix', 'SIB-mix']
         }
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
@@ -241,6 +247,9 @@ class WordMix(AbstractBatchTransformation):
             if requested.
         """
         data, targets = batch
+        if type(data) == list:
+            data = np.array(data, dtype=np.string_)
+            targets = np.array(targets)
 
         # shuffle data, targets
         indices = np.random.permutation(len(data))
@@ -291,7 +300,7 @@ class WordMix(AbstractBatchTransformation):
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {
             'task_name': ['sentiment', 'topic'],
-            'tran_type': ['SIB', 'SIB']
+            'tran_type': ['SIB-mix', 'SIB-mix']
         }
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
