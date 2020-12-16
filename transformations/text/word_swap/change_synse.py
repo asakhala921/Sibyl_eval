@@ -3,6 +3,7 @@ import numpy as np
 import re
 import random
 from pattern.en import wordnet
+import nltk
 from nltk.corpus import stopwords
 import spacy
 import en_core_web_sm
