@@ -7,6 +7,11 @@ from nltk.corpus import stopwords
 import spacy
 import en_core_web_sm
 
+try:
+    nltk.data.find('corpora/stopwords')
+except LookupError:
+    nltk.download('stopwords')
+
 class ChangeSynse(AbstractTransformation):
     """
     Replaces a specified number of random words a string
