@@ -2,6 +2,7 @@ import os
 import pickle
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 
 from transformations.text.contraction.expand_contractions import ExpandContractions
 from transformations.text.contraction.contract_contractions import ContractContractions
@@ -104,29 +105,120 @@ def init_transforms(task=None, tran=None, meta=True):
         df = df[tran_df]
     return df
 
-def apply_transforms(test_suites, num_transforms=2, task=None, tran=None):
+def transform_test_suites(test_suites, num_transforms=2, task=None, tran=None):
     df = init_transforms(task=task, tran=tran, meta=True)
     new_test_suites = {}
     for i, test_suite in tqdm(test_suites.items()):
-        new_X, new_y, new_ts = [], [], []
-        for X, y in zip(test_suite['data'], test_suite['target']):
+        if tran=='SIB-mix':
+            if type(test_suite['data']) == list:
+                data = np.array(test_suite['data'], dtype=np.string_)
+                targets = np.array(test_suite['target'])
+            batch = (test_suite['data'], test_suite['target'])
             ts = []
             n = 0
             while n < num_transforms:
                 t_df   = df.sample(1)
-                t_fn   = t_df['tran_fn'][0]
-                t_name = t_df['transformation'][0]
+                t_fn   = t_df['tran_fn'].iloc[0]
+                t_name = t_df['transformation'].iloc[0]
                 if t_name in ts:
                     continue
                 else:
                     ts.append(t_name)
-                X, y, meta = t_fn.transform_Xy(X, y)
+                batch, meta = t_fn(batch)
                 if meta['change']:
                     n += 1
                 else:
                     ts.remove(t_name)
-            new_X.append(X)
-            new_y.append(y)
-            new_ts.append(ts)
-        new_test_suites[i] = {'data': new_X, 'target': new_y, 'ts': new_ts}
+            new_test_suites[i] = {'data': batch[0], 'target': batch[1], 'ts': ts}
+        else: 
+            new_X, new_y, new_ts = [], [], []
+            for X, y in zip(test_suite['data'], test_suite['target']):
+                ts = []
+                n = 0
+                while n < num_transforms:
+                    t_df   = df.sample(1)
+                    t_fn   = t_df['tran_fn'].iloc[0]
+                    t_name = t_df['transformation'].iloc[0]
+                    if t_name in ts:
+                        continue
+                    else:
+                        ts.append(t_name)
+                    X, y, meta = t_fn.transform_Xy(str(X), y)
+                    if meta['change']:
+                        n += 1
+                    else:
+                        ts.remove(t_name)
+                new_X.append(X)
+                new_y.append(y)
+                new_ts.append(ts)
+            new_test_suites[i] = {'data': new_X, 'target': new_y, 'ts': new_ts}
     return new_test_suites
+
+def transform_dataset(dataset, num_transforms=2, task=None, tran=None):
+    df = init_transforms(task=task, tran=tran, meta=True)
+    text, label = dataset['text'], dataset['label'] 
+    new_text, new_label, trans = [], [], []
+    if tran == 'SIB-mix':
+        if type(text) == list:
+            text = np.array(text, dtype=np.string_)
+            label = np.array(label)
+        batch_size= 1000
+        for i in range(0, len(label), batch_size):
+            text_batch = text[i:i+batch_size]
+            label_batch = label[i:i+batch_size]
+            batch = (text_batch, label_batch)
+            t_trans = []
+            n = 0
+            while n < num_transforms:
+                t_df   = df.sample(1)
+                t_fn   = t_df['tran_fn'].iloc[0]
+                t_name = t_df['transformation'].iloc[0]
+                if t_name in trans:
+                    continue
+                else:
+                    t_trans.append(t_name)
+                batch, meta = t_fn(batch)
+                if meta['change']:
+                    n += 1
+                else:
+                    t_trans.remove(t_name)
+            new_text.extend(batch[0].tolist())
+            new_label.extend(batch[1].tolist())
+            trans.append(t_trans)
+    else:
+        for X, y in tzip(text, label):
+            t_trans = []
+            n = 0
+            while n < num_transforms:
+                t_df   = df.sample(1)
+                t_fn   = t_df['tran_fn'].iloc[0]
+                t_name = t_df['transformation'].iloc[0]
+                if t_name in t_trans:
+                    continue
+                else:
+                    t_trans.append(t_name)
+                X, y, meta = t_fn.transform_Xy(str(X), y)
+                if meta['change']:
+                    n += 1
+                else:
+                    t_trans.remove(t_name)
+            new_text.append(X)
+            new_label.append(y)
+            trans.append(t_trans)
+    return new_text, new_label, trans
+
+class CorrectKCounter:
+    def __init__(self, k=1):
+        self.k = k
+    def __call__(self, logits, y_true):
+        print(y_true.shape, logits.shape)
+        y_weights, y_idx = torch.topk(y_true, k=self.k, dim=1)
+        out_weights, out_idx = torch.topk(logits, k=self.k, dim=1)
+        correct = torch.sum(torch.eq(y_idx, out_idx) * y_weights)
+        return correct
+
+class CorrectCounter:
+    def __call__(self, logits, y_true):
+        y_pred = torch.argmax(logits, dim=1)
+        correct = (y_pred == y_true).sum().item()
+        return correct
