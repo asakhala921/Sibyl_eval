@@ -1,7 +1,7 @@
 numpy
 pandas
 emoji_translate
-pattern
+patternfork-nosql
 spacy
 datasets
 transformers
