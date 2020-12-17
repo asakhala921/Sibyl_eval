@@ -1,13 +1,4 @@
 *.pyc
-.ipynb_checkpoints/tester-checkpoint.ipynb
-.ipynb_checkpoints/IMDB-checkpoint.ipynb
-.ipynb_checkpoints/test_IMDB-checkpoint.ipynb
-.ipynb_checkpoints/AG_NEWS-checkpoint.ipynb
-.ipynb_checkpoints/gen_DATA-checkpoint.ipynb
-.ipynb_checkpoints/train_IMDB-checkpoint.ipynb
-.ipynb_checkpoints/test_SST2-checkpoint.ipynb
+.ipynb_checkpoints/
 results/
 assets/
-.ipynb_checkpoints/test_AG_NEWS-checkpoint.ipynb
-.ipynb_checkpoints/test_AG_NEWS-checkpoint.ipynb
-.ipynb_checkpoints/test_AG_NEWS-checkpoint.ipynb
