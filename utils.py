@@ -3,6 +3,7 @@ import pickle
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+from tqdm.contrib import tzip
 
 from transformations.text.contraction.expand_contractions import ExpandContractions
 from transformations.text.contraction.contract_contractions import ContractContractions
@@ -86,7 +87,7 @@ def npy_save(path, file):
     np.save(path, file)
         
 def npy_load(path):
-    return np.load(path)
+    return np.load(path, allow_pickle=True)
 
 def init_transforms(task=None, tran=None, meta=True):
     df_all = []
@@ -116,7 +117,10 @@ def transform_test_suites(test_suites, num_transforms=2, task=None, tran=None):
             batch = (test_suite['data'], test_suite['target'])
             ts = []
             n = 0
+            num_tries = 0
             while n < num_transforms:
+                if num_tries > 25:
+                    break
                 t_df   = df.sample(1)
                 t_fn   = t_df['tran_fn'].iloc[0]
                 t_name = t_df['transformation'].iloc[0]
@@ -135,7 +139,10 @@ def transform_test_suites(test_suites, num_transforms=2, task=None, tran=None):
             for X, y in zip(test_suite['data'], test_suite['target']):
                 ts = []
                 n = 0
+                num_tries = 0
                 while n < num_transforms:
+                    if num_tries > 25:
+                        break
                     t_df   = df.sample(1)
                     t_fn   = t_df['tran_fn'].iloc[0]
                     t_name = t_df['transformation'].iloc[0]
@@ -161,15 +168,18 @@ def transform_dataset(dataset, num_transforms=2, task=None, tran=None):
     if tran == 'SIB-mix':
         if type(text) == list:
             text = np.array(text, dtype=np.string_)
-            label = np.array(label)
+            label = pd.get_dummies(label).to_numpy(dtype=np.float)
         batch_size= 1000
-        for i in range(0, len(label), batch_size):
+        for i in tqdm(range(0, len(label), batch_size)):
             text_batch = text[i:i+batch_size]
             label_batch = label[i:i+batch_size]
             batch = (text_batch, label_batch)
             t_trans = []
             n = 0
+            num_tries = 0
             while n < num_transforms:
+                if num_tries > 25:
+                    break
                 t_df   = df.sample(1)
                 t_fn   = t_df['tran_fn'].iloc[0]
                 t_name = t_df['transformation'].iloc[0]
@@ -182,6 +192,7 @@ def transform_dataset(dataset, num_transforms=2, task=None, tran=None):
                     n += 1
                 else:
                     t_trans.remove(t_name)
+                num_tries += 1
             new_text.extend(batch[0].tolist())
             new_label.extend(batch[1].tolist())
             trans.append(t_trans)
@@ -189,7 +200,10 @@ def transform_dataset(dataset, num_transforms=2, task=None, tran=None):
         for X, y in tzip(text, label):
             t_trans = []
             n = 0
+            num_tries = 0
             while n < num_transforms:
+                if num_tries > 25:
+                    break
                 t_df   = df.sample(1)
                 t_fn   = t_df['tran_fn'].iloc[0]
                 t_name = t_df['transformation'].iloc[0]
