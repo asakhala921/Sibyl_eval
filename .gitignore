@@ -2,3 +2,15 @@
 .ipynb_checkpoints/
 results/
 pretrained/
+assets/SST2/sentiment/SIB/trans.npy
+assets/SST2/sentiment/SIB/text.npy
+assets/SST2/sentiment/SIB/label.npy
+assets/SST2/sentiment/INV/trans.npy
+assets/SST2/sentiment/INV/text.npy
+assets/SST2/sentiment/INV/label.npy
+assets/AG_NEWS/topic/SIB-mix/trans2.npy
+assets/AG_NEWS/topic/SIB-mix/text.npy
+assets/AG_NEWS/topic/SIB-mix/label.npy
+assets/AG_NEWS/topic/INV/trans.npy
+assets/AG_NEWS/topic/INV/text.npy
+assets/AG_NEWS/topic/INV/label.npy
