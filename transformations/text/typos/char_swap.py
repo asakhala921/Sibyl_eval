@@ -34,11 +34,12 @@ class RandomCharSwap(AbstractTransformation):
         ret : str
             The output with random chars pairs swapped
         """
-        original=string
-        idx = sorted(np.random.choice(len(string)-1, n, replace=False ))
-        for i in idx:
-            string = string[:i] + string[i + 1] + string[i] + string[i + 2 :]
         assert type(string) == str
+        original=string
+        if len(string)-1 > 0:
+            idx = sorted(np.random.choice(len(string)-1, n, replace=False ))
+            for i in idx:
+                string = string[:i] + string[i + 1] + string[i] + string[i + 2 :]
         meta = {'change': string!=original}
         if self.metadata: return string, meta
         return string
