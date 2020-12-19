@@ -1,14 +1,13 @@
-numpy
-pandas
 emoji_translate
 patternfork-nosql
 spacy
 datasets
 transformers
+scikit-learn
 
-# dev
-jupyter
-vaderSentiment
+## dev
+# jupyter
+# vaderSentiment
 
 # python -m spacy download en
 # conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
