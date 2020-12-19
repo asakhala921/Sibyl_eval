@@ -225,7 +225,6 @@ class CorrectKCounter:
     def __init__(self, k=1):
         self.k = k
     def __call__(self, logits, y_true):
-        print(y_true.shape, logits.shape)
         y_weights, y_idx = torch.topk(y_true, k=self.k, dim=1)
         out_weights, out_idx = torch.topk(logits, k=self.k, dim=1)
         correct = torch.sum(torch.eq(y_idx, out_idx) * y_weights)
@@ -236,3 +235,21 @@ class CorrectCounter:
         y_pred = torch.argmax(logits, dim=1)
         correct = (y_pred == y_true).sum().item()
         return correct
+
+def get_acc(logits, y_true, k=2):
+    total = len(y_true)
+    y_true = torch.tensor(y_true)
+    y_pred = torch.argmax(logits, dim=1)
+    correct = (y_pred == y_true).sum().item()
+    acc = correct / total
+    return acc.item()
+
+def get_acc_at_k(logits, y_true, k=2):
+    logits = torch.tensor(logits)
+    y_true = torch.tensor(y_true)
+    total = len(y_true)
+    y_weights, y_idx = torch.topk(y_true, k=k, dim=-1)
+    out_weights, out_idx = torch.topk(logits, k=k, dim=-1)
+    correct = torch.sum(torch.eq(y_idx, out_idx) * y_weights)
+    acc = correct / total
+    return acc.item()
