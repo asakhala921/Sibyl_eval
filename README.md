@@ -10,6 +10,15 @@ There are two primary kinds of transformations:
   
 Some transformations also result in *soft labels* and they're called SIB-mix transformations. For example, within topic classification you could use `SentMix` on your data to randomly combine two inputs from different classes into one input and then shuffle the sentences around. This new data would have a new label with probabilities weighted according to the relative length of text contributed by the two inputs. Illustrating with `AG_NEWS`, if you mix an article about sports with one about business, it might result in a new soft label like [0, 0.5, 0.5, 0]. The intuition here is that humans would be able to recognize that there are two topics in a document and we should expect our models to behave similarly (i.e. the model predictions should be very close to 50/50 on the expected topics). 
 
+## Pretrained Models
+
+We offer links to several of pre-trained + fine-tuned BERT models used during our evaluation. 
+
+- [bert-base-uncased-sst2-INV](https://drive.google.com/file/d/17rytP7-qSJbgD1r3cpvgqr1JO-viV09V/view?usp=sharing)
+- [bert-base-uncased-sst2-SIB](https://drive.google.com/file/d/18XPJxlkuOn5gHQaBZK9NVRxqv1CRd-xE/view?usp=sharing)
+- [bert-base-uncased-ag_news-INV](https://drive.google.com/file/d/1Z7lqIrFh8pE7_Rh4R_eBPvtutYWTAecL/view?usp=sharing)
+- [bert-base-uncased-ag_news-SIB-mix](https://drive.google.com/file/d/1zIIoQbqZqqvSFhp6ovSv6szrDzYUHlMr/view?usp=sharing)
+
 ## Examples
 
 Here's a quick example of using a single transform:
