@@ -9,6 +9,8 @@ except LookupError:
     nltk.download('punkt')
 
 def concat_text(np_char1, np_char2):
+    np_char1 = np_char1.astype(np.string_)
+    np_char2 = np_char2.astype(np.string_)
     sep = np.full_like(np_char1, " ", dtype=np.string_)
     ret = np.char.add(np_char1, sep)
     ret = np.char.add(ret, np_char2)
