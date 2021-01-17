@@ -66,7 +66,6 @@ TRANSFORMATIONS = [
 
 import pandas as pd
 from tqdm import tqdm
-from tqdm.contrib import tzip
 
 def init_transforms(task=None, tran=None, meta=True):
     df_all = []
@@ -176,7 +175,7 @@ def transform_dataset(dataset, num_transforms=2, task=None, tran=None):
             new_label.extend(batch[1].tolist())
             trans.append(t_trans)
     else:
-        for X, y in tzip(text, label):
+        for X, y in tqdm(zip(text, label)):
             t_trans = []
             n = 0
             num_tries = 0

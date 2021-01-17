@@ -4,6 +4,7 @@ spacy
 datasets
 transformers
 scikit-learn
+seaborn
 
 ## dev
 # jupyter
