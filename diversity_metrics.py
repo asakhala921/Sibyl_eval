@@ -129,7 +129,7 @@ class TextDiversity:
         if self.verbose:
             print('getting token embeddings...')
             batches = tqdm(batches, total=int(len(inputs.input_ids)/self.batch_size))
-            
+
         outputs = []
         for input_ids, attention_mask in batches:
           emb = self.encode(input_ids.to(self.device), 
@@ -143,7 +143,7 @@ class TextDiversity:
 
         # compress embedding to speed up similarity matrix computation
         if n_components == "auto":
-        	n_components = len(boe) // 10
+        	n_components = min(max(2, len(boe) // 10), boe.shape[-1])
         	if self.verbose:
         		print('Using n_components={}'.format(str(n_components)))
 
