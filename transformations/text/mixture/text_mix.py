@@ -112,7 +112,8 @@ class TextMix(AbstractBatchTransformation):
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {
             'task_name': ['sentiment', 'topic'],
-            'tran_type': ['SIB-mix', 'SIB-mix']
+            'tran_type': ['SIB', 'SIB'],
+            'label_type': ['soft', 'soft']
         }
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
@@ -207,7 +208,8 @@ class SentMix(AbstractBatchTransformation):
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {
             'task_name': ['sentiment', 'topic'],
-            'tran_type': ['SIB-mix', 'SIB-mix']
+            'tran_type': ['SIB', 'SIB'],
+            'label_type': ['soft', 'soft']
         }
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
@@ -302,7 +304,8 @@ class WordMix(AbstractBatchTransformation):
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {
             'task_name': ['sentiment', 'topic'],
-            'tran_type': ['SIB-mix', 'SIB-mix']
+            'tran_type': ['SIB', 'SIB'],
+            'label_type': ['soft', 'soft']
         }
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df

@@ -65,7 +65,8 @@ class WordDeletion(AbstractTransformation):
     def get_tran_types(self, task_name=None, tran_type=None):
         self.tran_types = {
             'task_name': ['sentiment', 'topic'],
-            'tran_type': ['INV', 'INV']
+            'tran_type': ['INV', 'INV'],
+            'label_type': ['hard', 'hard']
         }
         df = _get_tran_types(self.tran_types, task_name, tran_type)
         return df
