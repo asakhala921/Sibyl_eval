@@ -51,14 +51,14 @@ class AbstractTransformation(ABC):
         pass
 
     @abstractmethod
-    def get_tran_types(self, task_name=None, tran_type=None):
+    def get_tran_types(self, task_name=None, tran_type=None, label_type=None):
         """
         See _get_tran_types()
         """
         pass
 
 
-def _get_tran_types(tran_types, task_name=None, tran_type=None):
+def _get_tran_types(tran_types, task_name=None, tran_type=None, label_type=None):
     """
     Defines the task and type of transformation (SIB or INV) 
     to determine the effect on the expected behavior (whether 
@@ -71,6 +71,9 @@ def _get_tran_types(tran_types, task_name=None, tran_type=None):
     tran_type : str
         Filters the results for the requested trans type,
         which is either 'INV' or 'SIB'.
+    label_type : str
+        Filters the results for the requested label type,
+        which is either 'hard' or 'soft'.
 
     Returns
     -------
@@ -83,6 +86,8 @@ def _get_tran_types(tran_types, task_name=None, tran_type=None):
                 not change
                 SIB == sibylvariant ==> output behavior 
                 changes in some way
+            - label_type : str
+                whether to use soft or hard labels
     """
     df = pd.DataFrame.from_dict(tran_types)
     if task_name is not None:
@@ -95,4 +100,9 @@ def _get_tran_types(tran_types, task_name=None, tran_type=None):
         if tran_type not in tran_types:
             raise ValueError('The selected tran type must be one of the following: {}'.format(', '.join(tran_types)))
         df = df[df['tran_type'] == tran_type]
+    if label_type is not None:
+        label_types = set(df.label_type.tolist())
+        if label_type not in label_types:
+            raise ValueError('The selected label type must be one of the following: {}'.format(', '.join(tran_types)))
+        df = df[df['label_type'] == label_type]
     return df

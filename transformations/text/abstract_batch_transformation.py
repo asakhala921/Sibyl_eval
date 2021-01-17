@@ -30,7 +30,7 @@ class AbstractBatchTransformation(ABC):
 
 
     @abstractmethod
-    def get_tran_types(self, task_name=None, tran_type=None):
+    def get_tran_types(self, task_name=None, tran_type=None, label_type=None):
         """
         See _get_tran_types()
         """

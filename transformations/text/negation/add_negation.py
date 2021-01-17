@@ -117,13 +117,13 @@ class AddNegation(AbstractTransformation):
                     assert type(ret) == str
                     return ret
 
-    def get_tran_types(self, task_name=None, tran_type=None):
+    def get_tran_types(self, task_name=None, tran_type=None, label_type=None):
         self.tran_types = {
             'task_name': ['sentiment', 'topic'],
             'tran_type': ['SIB', 'INV'],
             'label_type': ['hard', 'hard']
         }
-        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        df = _get_tran_types(self.tran_types, task_name, tran_type, label_type)
         return df
 
     def transform_Xy(self, X, y):

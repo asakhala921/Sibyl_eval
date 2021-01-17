@@ -44,13 +44,13 @@ class Demojify(AbstractTransformation):
         if self.metadata: return ret, meta
         return ret
 
-    def get_tran_types(self, task_name=None, tran_type=None):
+    def get_tran_types(self, task_name=None, tran_type=None, label_type=None):
         self.tran_types = {
             'task_name': ['sentiment', 'topic'],
             'tran_type': ['INV', 'INV'],
             'label_type': ['hard', 'hard']
         }
-        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        df = _get_tran_types(self.tran_types, task_name, tran_type, label_type)
         return df
 
     def transform_Xy(self, X, y):
@@ -108,7 +108,7 @@ class RemoveEmoji(Demojify):
         if self.metadata: return ret, meta
         return ret
 
-    def get_tran_types(self, task_name=None, tran_type=None):
+    def get_tran_types(self, task_name=None, tran_type=None, label_type=None):
         pass
 
     def remove_emoji_by_polarity(self, string, p_rng=[-1,1]):
@@ -146,13 +146,13 @@ class RemovePositiveEmoji(RemoveEmoji):
         if self.metadata: return ret, meta
         return ret
 
-    def get_tran_types(self, task_name=None, tran_type=None):
+    def get_tran_types(self, task_name=None, tran_type=None, label_type=None):
         self.tran_types = {
             'task_name': ['sentiment', 'topic'],
             'tran_type': ['SIB', 'INV'],
             'label_type': ['soft', 'hard']
         }
-        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        df = _get_tran_types(self.tran_types, task_name, tran_type, label_type)
         return df
 
     def transform_Xy(self, X, y):
@@ -177,13 +177,13 @@ class RemoveNegativeEmoji(RemoveEmoji):
         if self.metadata: return ret, meta
         return ret
 
-    def get_tran_types(self, task_name=None, tran_type=None):
+    def get_tran_types(self, task_name=None, tran_type=None, label_type=None):
         self.tran_types = {
             'task_name': ['sentiment', 'topic'],
             'tran_type': ['SIB', 'INV'],
             'label_type': ['soft', 'hard']
         }
-        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        df = _get_tran_types(self.tran_types, task_name, tran_type, label_type)
         return df
 
     def transform_Xy(self, X, y):
@@ -208,13 +208,13 @@ class RemoveNeutralEmoji(RemoveEmoji):
         if self.metadata: return ret, meta
         return ret
 
-    def get_tran_types(self, task_name=None, tran_type=None):
+    def get_tran_types(self, task_name=None, tran_type=None, label_type=None):
         self.tran_types = {
             'task_name': ['sentiment', 'topic'],
             'tran_type': ['INV', 'INV'],
             'label_type': ['hard', 'hard']
         }
-        df = _get_tran_types(self.tran_types, task_name, tran_type)
+        df = _get_tran_types(self.tran_types, task_name, tran_type, label_type)
         return df
 
     def transform_Xy(self, X, y):
