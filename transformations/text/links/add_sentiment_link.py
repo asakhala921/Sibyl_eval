@@ -85,9 +85,9 @@ class AddSentimentLink(AbstractTransformation):
             y_ = y
         if tran_type == 'SIB':
             if self.sentiment == 'positive':
-                y_ = 1
+                y_ = [0.25, 0.75]
             if self.sentiment == 'negative':
-                y_ = 0
+                y_ = [0.75, 0.25]
         if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
@@ -123,7 +123,7 @@ class AddPositiveLink(AddSentimentLink):
         if tran_type == 'INV':
             y_ = y
         if tran_type == 'SIB':
-            y_ = 1
+            y_ = [0.25, 0.75]
         if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
@@ -158,6 +158,6 @@ class AddNegativeLink(AddSentimentLink):
         if tran_type == 'INV':
             y_ = y
         if tran_type == 'SIB':
-            y_ = 0
+            y_ = [0.75, 0.25]
         if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
