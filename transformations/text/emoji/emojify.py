@@ -164,7 +164,7 @@ class AddPositiveEmoji(AddEmoji):
         if tran_type == 'INV':
             y_ = y
         if tran_type == 'SIB':
-            y_ = 1
+            y_ = [0, 1] if y == 1 else [0.75, 0.25]
         if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
@@ -197,7 +197,7 @@ class AddNegativeEmoji(AddEmoji):
         if tran_type == 'INV':
             y_ = y
         if tran_type == 'SIB':
-            y_ = 0
+            y_ = [1, 0] if y == 0 else [0.25, 0.75]
         if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
