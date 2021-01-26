@@ -106,3 +106,40 @@ def _get_tran_types(tran_types, task_name=None, tran_type=None, label_type=None)
             raise ValueError('The selected label type must be one of the following: {}'.format(', '.join(tran_types)))
         df = df[df['label_type'] == label_type]
     return df
+
+
+def _get_label(x_old, x_new, y_old, num_class=2, trans_type='INV', softness=False):
+    import numpy as np
+    onehot = bool(type(y_old) == np.ndarray)
+
+    # if len(x_new) > len(x_old):
+    #     mass_y_old = ( len(x_old) )/len(x_new)
+    #     mass_y_new = ( len(x_new) - len(x_old) )/len(x_new)
+    # else:
+    #     mass_y_old = ( len(x_old) )/len(x_new)
+    #     mass_y_new = ( len(x_new) - len(x_old) )/len(x_new)
+    mass_y_old = ( len(x_old) )/ (len(x_new)+len(x_old))
+    mass_y_new = ( len(x_new) - len(x_old) )/ (len(x_new)+len(x_old))
+
+    y_new = np.zeros(num_class)
+    # print('y old :', y_old, y_new)
+    y_new[y_old] = 1
+    return y_new
+    
+    if trans_type == 'INV' and softness == False:
+        y_new = y_old
+    
+    if trans_type == 'SIB' and softness == False:
+        y_new = int(not(y_old))
+
+    if trans_type == 'INV' and softness == True:
+        y_new = np.zeros(num_class)
+        # print('old :', y_old, y_new)
+        y_new[y_old] = 1
+
+    if trans_type == 'SIB' and softness == True:
+        # //distribute mass_y_new
+        y_new = np.zeros(num_class)
+        y_new[y_old] = int(not(y_old))
+
+    return y_new
