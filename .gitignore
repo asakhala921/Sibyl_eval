@@ -2,6 +2,7 @@
 .ipynb_checkpoints/
 results/
 pretrained/
+logs/
 assets/SST2/sentiment/SIB/trans.npy
 assets/SST2/sentiment/SIB/text.npy
 assets/SST2/sentiment/SIB/label.npy
@@ -41,3 +42,6 @@ assets/SST2/sentiment/SIB/trans3.npy
 assets/AG_NEWS/topic/INVSIB/label.npy
 assets/AG_NEWS/topic/INVSIB/text.npy
 assets/AG_NEWS/topic/INVSIB/trans.npy
+assets/SST2/sentiment/INVSIB/trans.npy
+assets/SST2/sentiment/INVSIB/text.npy
+assets/SST2/sentiment/INVSIB/label.npy
