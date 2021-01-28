@@ -7,6 +7,7 @@ import numpy as np
 from tqdm import tqdm
 import seaborn as sns 
 import matplotlib.pyplot as plt
+from nltk import word_tokenize
 
 sns.set("paper", 
 	rc={"font.size":20,
@@ -31,7 +32,7 @@ def get_ttr_by_ids(input_ids):
     token_ids, counts = np.unique(input_ids, return_counts=True)
     idx = np.isin(token_ids, [0, 101, 102], assume_unique=True, invert=True)
     token_ids, counts = token_ids[idx], counts[idx]
-    ttr = len(token_ids) / counts.sum() * 100
+    ttr = len(token_ids) / counts.sum()
     return ttr
 
 def get_ttr_by_text(text):
@@ -48,7 +49,7 @@ def get_ttr_by_text(text):
     tokens = [word_tokenize(x) for x in text]
     tokens = [item for sublist in tokens for item in sublist]
     toks, tok_counts = np.unique(tokens, return_counts=True)
-    ttr = len(toks) / tok_counts.sum() * 100
+    ttr = len(toks) / tok_counts.sum()
     return ttr
 
 class TextDiversity:
@@ -99,7 +100,7 @@ class TextDiversity:
         if self.verbose:
             ret = {
                 'diversity': D,
-                'diversity_normalized': D / len(self.tokens),
+                'diversity_normalized': (D / len(self.tokens)),
                 'entropy': np.log(D),
                 'tokens': self.tokens,
                 'token_similarities': self.token_similarities,

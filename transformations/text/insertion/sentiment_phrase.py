@@ -1,4 +1,4 @@
-from ..abstract_transformation import AbstractTransformation, _get_tran_types
+from ..abstract_transformation import *
 from ..data.phrases import POSITIVE_PHRASES, NEGATIVE_PHRASES
 from random import sample 
 
@@ -8,7 +8,7 @@ class InsertSentimentPhrase(AbstractTransformation):
     a pre-defined list of phrases.  
     """
 
-    def __init__(self, sentiment='positive', task=None, meta=False):
+    def __init__(self, sentiment='positive', task=None,meta=False):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -58,19 +58,23 @@ class InsertSentimentPhrase(AbstractTransformation):
             'tran_type': ['SIB', 'INV'],
             'label_type': ['soft', 'hard']
         }
-        df = _get_tran_types(self.tran_types, task_name, tran_type, label_type)
+        df = self._get_tran_types(self.tran_types, task_name, tran_type, label_type)
         return df
 
     def transform_Xy(self, X, y):
         X_ = self(X)
-        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        
+        df = self.get_tran_types(task_name=self.task)
+        tran_type = df['tran_type'].iloc[0]
+        label_type = df['label_type'].iloc[0]
+
         if tran_type == 'INV':
             y_ = y
         if tran_type == 'SIB':
             if self.sentiment == 'positive':
-                y_ = [0.25, 0.75]
+                y_ = smooth_label(y, factor=0.5)
             if self.sentiment == 'negative':
-                y_ = [0.75, 0.25]
+                y_ = smooth_label(y, factor=0.5)
         if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
@@ -80,7 +84,7 @@ class InsertPositivePhrase(InsertSentimentPhrase):
     a pre-defined list of phrases.  
     """
 
-    def __init__(self, meta=False):
+    def __init__(self, task=None, meta=False):
         super().__init__(sentiment = 'positive')
         self.metadata = meta
     def __call__(self, string):
@@ -97,16 +101,20 @@ class InsertPositivePhrase(InsertSentimentPhrase):
             'tran_type': ['SIB', 'INV'],
             'label_type': ['soft', 'hard']
         }
-        df = _get_tran_types(self.tran_types, task_name, tran_type, label_type)
+        df = self._get_tran_types(self.tran_types, task_name, tran_type, label_type)
         return df
 
     def transform_Xy(self, X, y):
         X_ = self(X)
-        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        
+        df = self.get_tran_types(task_name=self.task)
+        tran_type = df['tran_type'].iloc[0]
+        label_type = df['label_type'].iloc[0]
+
         if tran_type == 'INV':
             y_ = y
         if tran_type == 'SIB':
-            y_ = [0.25, 0.75]
+            y_ = smooth_label(y, factor=0.5)
         if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
@@ -116,7 +124,7 @@ class InsertNegativePhrase(InsertSentimentPhrase):
     a pre-defined list of phrases.  
     """
 
-    def __init__(self, meta=False):
+    def __init__(self, task=None, meta=False):
         super().__init__(sentiment = 'negative')
         self.metadata = meta
     def __call__(self, string):
@@ -133,15 +141,19 @@ class InsertNegativePhrase(InsertSentimentPhrase):
             'tran_type': ['SIB', 'INV'],
             'label_type': ['soft', 'hard']
         }
-        df = _get_tran_types(self.tran_types, task_name, tran_type, label_type)
+        df = self._get_tran_types(self.tran_types, task_name, tran_type, label_type)
         return df
 
     def transform_Xy(self, X, y):
         X_ = self(X)
-        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        
+        df = self.get_tran_types(task_name=self.task)
+        tran_type = df['tran_type'].iloc[0]
+        label_type = df['label_type'].iloc[0]
+
         if tran_type == 'INV':
             y_ = y
         if tran_type == 'SIB':
-            y_ = [0.75, 0.25]
+            y_ = smooth_label(y, factor=0.5)
         if self.metadata: return X_[0], y_, X_[1]
         return X_, y_

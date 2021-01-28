@@ -1,4 +1,4 @@
-from ..abstract_transformation import AbstractTransformation, _get_tran_types, _get_label
+from ..abstract_transformation import *
 import numpy as np
 import string
 
@@ -49,21 +49,21 @@ class RandomCharInsert(AbstractTransformation):
             'tran_type': ['INV', 'INV'],
             'label_type': ['hard', 'hard']
         }
-        df = _get_tran_types(self.tran_types, task_name, tran_type, label_type)
+        df = self._get_tran_types(self.tran_types, task_name, tran_type, label_type)
         return df
 
-    def transform_Xy(self, X, y, softness=False):
+    def transform_Xy(self, X, y):
         X_ = self(X)
-        df = self.get_tran_types(task_name=self.task)
-        tran_type = df['tran_type'][0]
-
-        if softness is None:
-            softness = df['label_type'][0] == 'hard'
-        # if tran_type == 'INV':
-        #     y_ = _get_label
-        # if tran_type == 'SIB':
-        y_ = _get_label(x_old=X, x_new=X_, y_old=y, num_class=2, trans_type=tran_type, softness=softness)
         
+        df = self.get_tran_types(task_name=self.task)
+        tran_type = df['tran_type'].iloc[0]
+        label_type = df['label_type'].iloc[0]
+
+        if tran_type == 'INV':
+            y_ = y
+        elif tran_type == 'SIB':
+            soften = label_type == 'hard'
+            y_ = invert_label(y, soften=soften)
         if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 

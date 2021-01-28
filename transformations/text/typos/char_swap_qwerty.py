@@ -1,4 +1,4 @@
-from ..abstract_transformation import AbstractTransformation, _get_tran_types
+from ..abstract_transformation import *
 import numpy as np
 
 class RandomSwapQwerty(AbstractTransformation):
@@ -6,7 +6,7 @@ class RandomSwapQwerty(AbstractTransformation):
     Substitues random chars
     """
 
-    def __init__(self, task=None, meta=False):
+    def __init__(self, task=None,meta=False):
         """
         A transformation that swaps characters with adjacent keys on a
         QWERTY keyboard, replicating the kind of errors that come from typing
@@ -83,16 +83,21 @@ class RandomSwapQwerty(AbstractTransformation):
             'tran_type': ['INV', 'INV'],
             'label_type': ['hard', 'hard']
         }
-        df = _get_tran_types(self.tran_types, task_name, tran_type, label_type)
+        df = self._get_tran_types(self.tran_types, task_name, tran_type, label_type)
         return df
 
     def transform_Xy(self, X, y):
         X_ = self(X)
-        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        
+        df = self.get_tran_types(task_name=self.task)
+        tran_type = df['tran_type'].iloc[0]
+        label_type = df['label_type'].iloc[0]
+
         if tran_type == 'INV':
             y_ = y
-        if tran_type == 'SIB':
-            y_ = 0 if y == 1 else 1
+        elif tran_type == 'SIB':
+            soften = label_type == 'hard'
+            y_ = invert_label(y, soften=soften)
         if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 

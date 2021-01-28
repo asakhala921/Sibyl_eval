@@ -1,4 +1,4 @@
-from ..abstract_batch_transformation import AbstractBatchTransformation, _get_tran_types
+from ..abstract_batch_transformation import AbstractBatchTransformation, self._get_tran_types
 import numpy as np
 import pandas as pd
 import nltk
@@ -77,7 +77,7 @@ class TextMix(AbstractBatchTransformation):
 
         # create soft target labels by first
         # one-hot-encoding targets if necessary
-        if len(targets.shape) == 1:
+        if targets.shape[-1] == 1:
             ohe_target1 = pd.get_dummies(targets).to_numpy(dtype=np.float)
             ohe_target2 = pd.get_dummies(shuffled_targets).to_numpy(dtype=np.float)
             classes1 = targets
@@ -115,7 +115,7 @@ class TextMix(AbstractBatchTransformation):
             'tran_type': ['SIB', 'SIB'],
             'label_type': ['soft', 'soft']
         }
-        df = _get_tran_types(self.tran_types, task_name, tran_type, label_type)
+        df = self._get_tran_types(self.tran_types, task_name, tran_type, label_type)
         return df
 
 class SentMix(AbstractBatchTransformation):
@@ -211,7 +211,7 @@ class SentMix(AbstractBatchTransformation):
             'tran_type': ['SIB', 'SIB'],
             'label_type': ['soft', 'soft']
         }
-        df = _get_tran_types(self.tran_types, task_name, tran_type, label_type)
+        df = self._get_tran_types(self.tran_types, task_name, tran_type, label_type)
         return df
 
 class WordMix(AbstractBatchTransformation):
@@ -307,5 +307,5 @@ class WordMix(AbstractBatchTransformation):
             'tran_type': ['SIB', 'SIB'],
             'label_type': ['soft', 'soft']
         }
-        df = _get_tran_types(self.tran_types, task_name, tran_type, label_type)
+        df = self._get_tran_types(self.tran_types, task_name, tran_type, label_type)
         return df

@@ -67,25 +67,29 @@ TRANSFORMATIONS = [
 import pandas as pd
 from tqdm import tqdm
 
-def init_transforms(task=None, tran=None, meta=True):
+def init_transforms(task_type=None, tran_type=None, label_type=None, meta=True):
     df_all = []
     for transform in TRANSFORMATIONS:
-        t = transform(meta=meta)
+        t = transform(task=task_type, meta=meta)
         df = t.get_tran_types()
         df['transformation'] = t.__class__.__name__
         df['tran_fn'] = t
         df_all.append(df)
     df = pd.concat(df_all)
-    if task is not None:
-        task_df = df['task_name'] == task
+    if task_type is not None:
+        task_df = df['task_name'] == task_type
         df = df[task_df]
-    if tran is not None:
-        tran_df = df['tran_type'] == tran
+    if tran_type is not None:
+        tran_df = df['tran_type'] == tran_type
         df = df[tran_df]
+    if label_type is not None:
+        label_df = df['label_type'] == label_type
+        df = df[label_df]
+    df.reset_index(drop=True, inplace=True)
     return df
 
-def transform_test_suites(test_suites, num_transforms=2, task=None, tran=None):
-    df = init_transforms(task=task, tran=tran, meta=True)
+def transform_test_suites(test_suites, num_transforms=2, task_type=None, tran_type=None, label_type=None):
+    df = init_transforms(task_type=task_type, tran_type=tran_type, label_type=label_type, meta=True)
     new_test_suites = {}
     for i, test_suite in tqdm(test_suites.items()):
         if tran=='SIB-mix':
@@ -139,8 +143,8 @@ def transform_test_suites(test_suites, num_transforms=2, task=None, tran=None):
             new_test_suites[i] = {'data': new_X, 'target': new_y, 'ts': new_ts}
     return new_test_suites
 
-def transform_dataset(dataset, num_transforms=2, task=None, tran=None):
-    df = init_transforms(task=task, tran=tran, meta=True)
+def transform_dataset(dataset, num_transforms=2, task_type=None, tran_type=None, label_type=None):
+    df = init_transforms(task_type=task_type, tran_type=tran_type, label_type=label_type, meta=True)
     text, label = dataset['text'], dataset['label'] 
     new_text, new_label, trans = [], [], []
     if tran == 'SIB-mix':

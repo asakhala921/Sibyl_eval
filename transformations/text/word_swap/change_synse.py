@@ -1,4 +1,4 @@
-from ..abstract_transformation import AbstractTransformation, _get_tran_types
+from ..abstract_transformation import *
 import numpy as np
 import re
 import random
@@ -19,7 +19,7 @@ class ChangeSynse(AbstractTransformation):
     with synses from wordnet. Also supports part-of-speech (pos)
     tagging via spaCy to get more natural replacements. 
     """
-    def __init__(self, synse='synonym', num_to_replace=-1, task=None, meta=False):
+    def __init__(self, synse='synonym', num_to_replace=-1, task=None,meta=False):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -101,20 +101,27 @@ class ChangeSynse(AbstractTransformation):
 
     def transform_Xy(self, X, y):
         X_ = self(X)
-        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        
+        df = self.get_tran_types(task_name=self.task)
+        tran_type = df['tran_type'].iloc[0]
+        label_type = df['label_type'].iloc[0]
+
         if tran_type == 'INV':
             y_ = y
         if tran_type == 'SIB':
             if self.synse == 'antonym':
-                y_ = 0 if y == 1 else 1
+                if label_type == 'soft':
+                    y_ = soften_label(y)
+                y_ = smooth_label(y_, 0.5)
             else:
                 y_ = y
         if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class ChangeSynonym(ChangeSynse):
-    def __init__(self, num_to_replace=-1, meta=False):
-        super().__init__(synse='synonym', num_to_replace=num_to_replace ,meta=meta)
+    def __init__(self, num_to_replace=-1, task=None, meta=False):
+        super().__init__(synse='synonym', num_to_replace=num_to_replace, task=task, meta=meta)
+        self.task = self.task
         self.metadata = meta 
 
     def __call__(self, string):
@@ -126,22 +133,28 @@ class ChangeSynonym(ChangeSynse):
             'tran_type': ['INV', 'INV'],
             'label_type': ['hard', 'hard']
         }
-        df = _get_tran_types(self.tran_types, task_name, tran_type, label_type)
+        df = self._get_tran_types(self.tran_types, task_name, tran_type, label_type)
         return df
 
     def transform_Xy(self, X, y):
         X_ = self(X)
-        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        
+        df = self.get_tran_types(task_name=self.task)
+        tran_type = df['tran_type'].iloc[0]
+        label_type = df['label_type'].iloc[0]
+
         if tran_type == 'INV':
             y_ = y
-        if tran_type == 'SIB':
-            y_ = y
+        elif tran_type == 'SIB':
+            soften = label_type == 'hard'
+            y_ = invert_label(y, soften=soften)
         if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class ChangeAntonym(ChangeSynse):
-    def __init__(self, num_to_replace=-1, meta=False):
-        super().__init__(synse='antonym', num_to_replace=num_to_replace,meta=meta)
+    def __init__(self, num_to_replace=-1, task=None, meta=False):
+        super().__init__(synse='antonym', num_to_replace=num_to_replace, task=task, meta=meta)
+        self.task = self.task
         self.metadata = meta
 
     def __call__(self, string):
@@ -153,22 +166,29 @@ class ChangeAntonym(ChangeSynse):
             'tran_type': ['SIB', 'INV'],
             'label_type': ['soft', 'hard']
         }
-        df = _get_tran_types(self.tran_types, task_name, tran_type, label_type)
+        df = self._get_tran_types(self.tran_types, task_name, tran_type, label_type)
         return df
 
     def transform_Xy(self, X, y):
         X_ = self(X)
-        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        
+        df = self.get_tran_types(task_name=self.task)
+        tran_type = df['tran_type'].iloc[0]
+        label_type = df['label_type'].iloc[0]
+
         if tran_type == 'INV':
             y_ = y
-        if tran_type == 'SIB':
-            y_ = [0.25, 0.75] if y == 1 else [0.75, 0.25]
+        elif tran_type == 'SIB':
+            if label_type == 'soft':
+                y_ = soften_label(y)
+            y_ = smooth_label(y_, 0.5)
         if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class ChangeHyponym(ChangeSynse):
-    def __init__(self, num_to_replace=-1, meta=False):
-        super().__init__(synse='hyponym', num_to_replace=num_to_replace,meta=meta) 
+    def __init__(self, num_to_replace=-1, task=None, meta=False):
+        super().__init__(synse='hyponym', num_to_replace=num_to_replace, task=task, meta=meta)
+        self.task = self.task
         self.metadata = meta
 
     def __call__(self, string):
@@ -180,22 +200,28 @@ class ChangeHyponym(ChangeSynse):
             'tran_type': ['INV', 'INV'],
             'label_type': ['hard', 'hard']
         }
-        df = _get_tran_types(self.tran_types, task_name, tran_type, label_type)
+        df = self._get_tran_types(self.tran_types, task_name, tran_type, label_type)
         return df
 
     def transform_Xy(self, X, y):
         X_ = self(X)
-        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        
+        df = self.get_tran_types(task_name=self.task)
+        tran_type = df['tran_type'].iloc[0]
+        label_type = df['label_type'].iloc[0]
+
         if tran_type == 'INV':
             y_ = y
-        if tran_type == 'SIB':
-            y_ = y
+        elif tran_type == 'SIB':
+            soften = label_type == 'hard'
+            y_ = invert_label(y, soften=soften)
         if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class ChangeHypernym(ChangeSynse):
-    def __init__(self, num_to_replace=-1, meta=False):
-        super().__init__(synse='hypernym', num_to_replace=num_to_replace,meta=meta) 
+    def __init__(self, num_to_replace=-1, task=None, meta=False):
+        super().__init__(synse='hypernym', num_to_replace=num_to_replace, task=task, meta=meta)
+        self.task = self.task
         self.metadata = meta
 
     def __call__(self, string):
@@ -207,16 +233,21 @@ class ChangeHypernym(ChangeSynse):
             'tran_type': ['INV', 'INV'],
             'label_type': ['hard', 'hard']
         }
-        df = _get_tran_types(self.tran_types, task_name, tran_type, label_type)
+        df = self._get_tran_types(self.tran_types, task_name, tran_type, label_type)
         return df
 
     def transform_Xy(self, X, y):
         X_ = self(X)
-        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        
+        df = self.get_tran_types(task_name=self.task)
+        tran_type = df['tran_type'].iloc[0]
+        label_type = df['label_type'].iloc[0]
+
         if tran_type == 'INV':
             y_ = y
-        if tran_type == 'SIB':
-            y_ = y
+        elif tran_type == 'SIB':
+            soften = label_type == 'hard'
+            y_ = invert_label(y, soften=soften)
         if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 

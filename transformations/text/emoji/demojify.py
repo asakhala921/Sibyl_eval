@@ -1,8 +1,8 @@
-from ..abstract_transformation import AbstractTransformation, _get_tran_types
+from ..abstract_transformation import *
 from emoji_translate import Translator, emoji_lis
 
 class Demojify(AbstractTransformation):
-    def __init__(self, exact_match_only=False, randomize=True, task=None, meta=False):
+    def __init__(self, exact_match_only=False, randomize=True, task=None,meta=False):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -50,21 +50,26 @@ class Demojify(AbstractTransformation):
             'tran_type': ['INV', 'INV'],
             'label_type': ['hard', 'hard']
         }
-        df = _get_tran_types(self.tran_types, task_name, tran_type, label_type)
+        df = self._get_tran_types(self.tran_types, task_name, tran_type, label_type)
         return df
 
     def transform_Xy(self, X, y):
         X_ = self(X)
-        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        
+        df = self.get_tran_types(task_name=self.task)
+        tran_type = df['tran_type'].iloc[0]
+        label_type = df['label_type'].iloc[0]
+
         if tran_type == 'INV':
             y_ = y
-        if tran_type == 'SIB':
-            y_ = 0 if y == 1 else 1
+        elif tran_type == 'SIB':
+            soften = label_type == 'hard'
+            y_ = invert_label(y, soften=soften)
         if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class RemoveEmoji(Demojify):
-    def __init__(self, polarity=[-1, 1], meta=False):
+    def __init__(self, polarity=[-1, 1], task=None, meta=False):
         """
         Initializes the transformation and provides an
         opporunity to supply a configuration if needed
@@ -87,6 +92,7 @@ class RemoveEmoji(Demojify):
             self.sentiment = 'positive'
         else:
             self.sentiment = 'neutral'
+        self.task = task
         self.metadata = meta
 
     def __call__(self, string):
@@ -121,22 +127,27 @@ class RemoveEmoji(Demojify):
 
     def transform_Xy(self, X, y):
         X_ = self(X)
-        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        
+        df = self.get_tran_types(task_name=self.task)
+        tran_type = df['tran_type'].iloc[0]
+        label_type = df['label_type'].iloc[0]
+
         if tran_type == 'INV':
             y_ = y
         if tran_type == 'SIB':
             if self.sentiment == 'positive':
-                y_ = [0.25, 0.75]
+                y_ = smooth_label(y, factor=0.5)
             if self.sentiment == 'negative':
-                y_ = [0.75, 0.25]
+                y_ = smooth_label(y, factor=0.5)
             if self.sentiment == 'neutral':
                 y_ = y
         if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class RemovePositiveEmoji(RemoveEmoji):
-    def __init__(self, polarity=[0.05, 1],meta=False):
+    def __init__(self, polarity=[0.05, 1], task=None, meta=False):
         super().__init__(polarity=polarity, meta=meta) 
+        self.task = task
         self.metadata = meta
 
     def __call__(self, string):
@@ -152,22 +163,27 @@ class RemovePositiveEmoji(RemoveEmoji):
             'tran_type': ['SIB', 'INV'],
             'label_type': ['soft', 'hard']
         }
-        df = _get_tran_types(self.tran_types, task_name, tran_type, label_type)
+        df = self._get_tran_types(self.tran_types, task_name, tran_type, label_type)
         return df
 
     def transform_Xy(self, X, y):
         X_ = self(X)
-        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        
+        df = self.get_tran_types(task_name=self.task)
+        tran_type = df['tran_type'].iloc[0]
+        label_type = df['label_type'].iloc[0]
+
         if tran_type == 'INV':
             y_ = y
         if tran_type == 'SIB':
-            y_ = [0.75, 0.25]
+            y_ = smooth_label(y, factor=0.5)
         if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class RemoveNegativeEmoji(RemoveEmoji):
-    def __init__(self, polarity=[-1, -0.05], meta=False):
+    def __init__(self, polarity=[-1, -0.05], task=None, meta=False):
         super().__init__(polarity=polarity, meta=meta)
+        self.task = task
         self.metadata = meta 
 
     def __call__(self, string):
@@ -183,22 +199,27 @@ class RemoveNegativeEmoji(RemoveEmoji):
             'tran_type': ['SIB', 'INV'],
             'label_type': ['soft', 'hard']
         }
-        df = _get_tran_types(self.tran_types, task_name, tran_type, label_type)
+        df = self._get_tran_types(self.tran_types, task_name, tran_type, label_type)
         return df
 
     def transform_Xy(self, X, y):
         X_ = self(X)
-        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        
+        df = self.get_tran_types(task_name=self.task)
+        tran_type = df['tran_type'].iloc[0]
+        label_type = df['label_type'].iloc[0]
+
         if tran_type == 'INV':
             y_ = y
         if tran_type == 'SIB':
-            y_ = [0.25, 0.75]
+            y_ = smooth_label(y, factor=0.5)
         if self.metadata: return X_[0], y_, X_[1]
         return X_, y_
 
 class RemoveNeutralEmoji(RemoveEmoji):
-    def __init__(self, polarity=[-0.05, 0.05], meta=False):
+    def __init__(self, polarity=[-0.05, 0.05], task=None, meta=False):
         super().__init__(polarity=polarity, meta=meta) 
+        self.task = task
         self.metadata = meta
 
     def __call__(self, string):
@@ -214,12 +235,16 @@ class RemoveNeutralEmoji(RemoveEmoji):
             'tran_type': ['INV', 'INV'],
             'label_type': ['hard', 'hard']
         }
-        df = _get_tran_types(self.tran_types, task_name, tran_type, label_type)
+        df = self._get_tran_types(self.tran_types, task_name, tran_type, label_type)
         return df
 
     def transform_Xy(self, X, y):
         X_ = self(X)
-        tran_type = self.get_tran_types(task_name=self.task)['tran_type'][0]
+        
+        df = self.get_tran_types(task_name=self.task)
+        tran_type = df['tran_type'].iloc[0]
+        label_type = df['label_type'].iloc[0]
+
         if tran_type == 'INV':
             y_ = y
         if tran_type == 'SIB':
