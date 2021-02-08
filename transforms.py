@@ -202,3 +202,71 @@ def transform_dataset(dataset, num_transforms=2, task_type=None, tran_type=None,
             new_label.append(y)
             trans.append(t_trans)
     return new_text, new_label, trans
+
+def transform_dataset_INVSIB(
+    dataset, 
+    num_INV_required=1, 
+    num_SIB_required=1, 
+    task_type=None, 
+    tran_type=None, 
+    label_type=None,
+    one_hot=True):
+    
+    df = init_transforms(task_type=task_type, tran_type=tran_type, label_type=label_type, meta=True)
+    
+    text, label = dataset['text'], dataset['label']
+    new_text, new_label, trans = [], [], []
+
+    num_classes = len(np.unique(label))
+    
+    for X, y in tqdm(zip(text, label), total=len(label)): 
+        t_trans = []
+
+        num_tries = 0
+        num_INV_applied = 0
+        while num_INV_applied < num_INV_required:
+            if num_tries > 25:
+                break
+            t_df   = df[df['tran_type']=='INV'].sample(1)
+            t_fn   = t_df['tran_fn'].iloc[0]
+            t_name = t_df['transformation'].iloc[0]                
+            if t_name in trans:
+                continue
+            X, y, meta = t_fn.transform_Xy(str(X), y)
+            if one_hot:
+                y = one_hot_encode(y, num_classes)
+            if meta['change']:
+                num_INV_applied += 1
+                t_trans.append(t_name)
+            num_tries += 1
+
+        num_tries = 0
+        num_SIB_applied = 0       
+        while num_SIB_applied < num_SIB_required:
+            if num_tries > 25:
+                break
+            t_df   = df[df['tran_type']=='SIB'].sample(1)
+            t_fn   = t_df['tran_fn'].iloc[0]
+            t_name = t_df['transformation'].iloc[0]                
+            if t_name in trans:
+                continue
+            if 'AbstractBatchTransformation' in t_fn.__class__.__bases__[0].__name__:
+                Xs, ys = sample_Xy(text, label, num_sample=1)
+                Xs.append(X); ys.append(y)   
+                Xs = [str(x).encode('utf-8') for x in Xs]
+                ys = [one_hot_encode(y, num_classes) for y in ys]
+                (X, y), meta = t_fn((Xs, ys))
+                X, y = X[0], y[0]
+            else:
+                X, y, meta = t_fn.transform_Xy(str(X), y)
+            if meta['change']:
+                num_SIB_applied += 1
+                t_trans.append(t_name)
+            num_tries += 1
+
+        new_text.append(X)
+        new_label.append(y)
+        trans.append(t_trans)
+                
+    new_text = [str(x).encode('utf-8') for x in new_text]
+    return np.array(new_text, dtype=np.string_), np.array(new_label), np.array(trans, dtype=np.string_)

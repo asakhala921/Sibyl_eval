@@ -45,3 +45,9 @@ assets/AG_NEWS/topic/INVSIB/trans.npy
 assets/SST2/sentiment/INVSIB/trans.npy
 assets/SST2/sentiment/INVSIB/text.npy
 assets/SST2/sentiment/INVSIB/label.npy
+assets/AG_NEWS/WordMix/text.npy
+assets/AG_NEWS/WordMix/label.npy
+assets/AG_NEWS/TextMix/text.npy
+assets/AG_NEWS/TextMix/label.npy
+assets/AG_NEWS/SentMix/text.npy
+assets/AG_NEWS/SentMix/label.npy

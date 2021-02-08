@@ -1,4 +1,4 @@
-from ..abstract_batch_transformation import AbstractBatchTransformation, self._get_tran_types
+from ..abstract_batch_transformation import AbstractBatchTransformation
 import numpy as np
 import pandas as pd
 import nltk
