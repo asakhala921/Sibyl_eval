@@ -51,3 +51,9 @@ assets/AG_NEWS/TextMix/text.npy
 assets/AG_NEWS/TextMix/label.npy
 assets/AG_NEWS/SentMix/text.npy
 assets/AG_NEWS/SentMix/label.npy
+assets/AG_NEWS/WordMix/text_test.npy
+assets/AG_NEWS/WordMix/label_test.npy
+assets/AG_NEWS/TextMix/text_test.npy
+assets/AG_NEWS/TextMix/label_test.npy
+assets/AG_NEWS/SentMix/text_test.npy
+assets/AG_NEWS/SentMix/label_test.npy
