@@ -10,6 +10,9 @@ seaborn
 # jupyter
 # vaderSentiment
 
-# python -m spacy download en
+# pip install -U pip setuptools wheel
+# pip install -U spacy
+# python -m spacy download en_core_web_trf
+
 # conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
 # conda install pytorch torchvision torchaudio cpuonly -c pytorch
