@@ -85,8 +85,10 @@ class InsertPositivePhrase(InsertSentimentPhrase):
     """
 
     def __init__(self, task=None, meta=False):
-        super().__init__(sentiment = 'positive')
+        super().__init__(sentiment = 'positive', task=task, meta=meta)
+        self.task = task
         self.metadata = meta
+
     def __call__(self, string):
         phrase = sample(POSITIVE_PHRASES,1)[0]
         ret = string + " " + phrase
@@ -125,8 +127,10 @@ class InsertNegativePhrase(InsertSentimentPhrase):
     """
 
     def __init__(self, task=None, meta=False):
-        super().__init__(sentiment = 'negative')
+        super().__init__(sentiment = 'negative', task=task, meta=meta)
+        self.task = task
         self.metadata = meta
+
     def __call__(self, string):
         phrase = sample(NEGATIVE_PHRASES,1)[0]
         ret = string + " " + phrase

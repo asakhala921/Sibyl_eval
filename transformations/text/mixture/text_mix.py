@@ -65,7 +65,11 @@ class TextMix(AbstractBatchTransformation):
         data, targets = batch
         if type(data) == list:
             data = np.array(data, dtype=np.string_)
-            targets = np.array(targets)
+        if type(targets) == list:
+            if type(targets[0]) == np.ndarray:
+                targets = np.stack(targets)
+            else:
+                targets = np.array(targets)
 
         # shuffle data, targets
         indices = np.random.permutation(len(data))
@@ -74,7 +78,6 @@ class TextMix(AbstractBatchTransformation):
 
         # concatenate data
         textmix = concat_text(data, shuffled_data)
-
         # create soft target labels by first
         # one-hot-encoding targets if necessary
         if targets.shape[-1] == 1:
@@ -157,7 +160,11 @@ class SentMix(AbstractBatchTransformation):
         data, targets = batch
         if type(data) == list:
             data = np.array(data, dtype=np.string_)
-            targets = np.array(targets)
+        if type(targets) == list:
+            if type(targets[0]) == np.ndarray:
+                targets = np.stack(targets)
+            else:
+                targets = np.array(targets)
 
         # shuffle data, targets
         indices = np.random.permutation(len(data))
@@ -173,7 +180,7 @@ class SentMix(AbstractBatchTransformation):
 
         # create soft target labels by first
         # one-hot-encoding targets if necessary
-        if len(targets.shape) == 1:
+        if targets.shape[-1] == 1:
             ohe_target1 = pd.get_dummies(targets).to_numpy(dtype=np.float)
             ohe_target2 = pd.get_dummies(shuffled_targets).to_numpy(dtype=np.float)
             classes1 = targets
@@ -253,7 +260,11 @@ class WordMix(AbstractBatchTransformation):
         data, targets = batch
         if type(data) == list:
             data = np.array(data, dtype=np.string_)
-            targets = np.array(targets)
+        if type(targets) == list:
+            if type(targets[0]) == np.ndarray:
+                targets = np.stack(targets)
+            else:
+                targets = np.array(targets)
 
         # shuffle data, targets
         indices = np.random.permutation(len(data))
@@ -269,7 +280,7 @@ class WordMix(AbstractBatchTransformation):
 
         # create soft target labels by first
         # one-hot-encoding targets if necessary
-        if len(targets.shape) == 1:
+        if targets.shape[-1] == 1:
             ohe_target1 = pd.get_dummies(targets).to_numpy(dtype=np.float)
             ohe_target2 = pd.get_dummies(shuffled_targets).to_numpy(dtype=np.float)
             classes1 = targets
