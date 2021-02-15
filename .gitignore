@@ -57,3 +57,12 @@ assets/AG_NEWS/TextMix/text_test.npy
 assets/AG_NEWS/TextMix/label_test.npy
 assets/AG_NEWS/SentMix/text_test.npy
 assets/AG_NEWS/SentMix/label_test.npy
+assets/SST2/WordMix/text_test.npy
+assets/SST2/WordMix/label_test.npy
+assets/SST2/TextMix/text_test.npy
+assets/SST2/TextMix/label_test.npy
+assets/SST2/SentMix/text_test.npy
+assets/SST2/SentMix/label_test.npy
+assets/AG_NEWS/topic/SIB/trans.npy
+assets/AG_NEWS/topic/SIB/text.npy
+assets/AG_NEWS/topic/SIB/label.npy
