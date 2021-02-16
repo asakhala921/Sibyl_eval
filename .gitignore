@@ -66,3 +66,12 @@ assets/SST2/SentMix/label_test.npy
 assets/AG_NEWS/topic/SIB/trans.npy
 assets/AG_NEWS/topic/SIB/text.npy
 assets/AG_NEWS/topic/SIB/label.npy
+assets/SST2/SIB/trans.npy
+assets/SST2/SIB/text.npy
+assets/SST2/SIB/label.npy
+assets/SST2/INVSIB/trans.npy
+assets/SST2/INVSIB/text.npy
+assets/SST2/INVSIB/label.npy
+assets/SST2/INV/trans.npy
+assets/SST2/INV/text.npy
+assets/SST2/INV/label.npy
