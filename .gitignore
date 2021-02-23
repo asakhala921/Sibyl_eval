@@ -106,3 +106,12 @@ assets/AG_NEWS/topic/INV_old/text2.npy
 assets/AG_NEWS/topic/INV_old/label3.npy
 assets/AG_NEWS/topic/INV_old/label2.npy
 assets/AG_NEWS/topic/INV_old/label.npy
+assets/AG_NEWS/SIB/trans.npy
+assets/AG_NEWS/SIB/text.npy
+assets/AG_NEWS/SIB/label.npy
+assets/AG_NEWS/INVSIB/trans.npy
+assets/AG_NEWS/INVSIB/text.npy
+assets/AG_NEWS/INVSIB/label.npy
+assets/AG_NEWS/INV/trans.npy
+assets/AG_NEWS/INV/text.npy
+assets/AG_NEWS/INV/label.npy
