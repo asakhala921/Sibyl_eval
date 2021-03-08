@@ -97,8 +97,10 @@ class AddSentimentLink(AbstractTransformation):
 
 class AddPositiveLink(AddSentimentLink):
     def __init__(self, task=None, meta=False):
-        super().__init__(url=None, sentiment='positive')
+        super().__init__(url=None, sentiment='positive', task=task, meta=meta)
+        self.task = task
         self.metadata = meta
+
     def __call__(self, string):
         if self.default_url:
             word = self.pos_words.sample(1)['word'].iloc[0]
@@ -137,8 +139,10 @@ class AddPositiveLink(AddSentimentLink):
 
 class AddNegativeLink(AddSentimentLink):
     def __init__(self, task=None, meta=False):
-        super().__init__(url=None, sentiment='negative')
+        super().__init__(url=None, sentiment='negative', task=task, meta=meta)
+        self.task = task
         self.metadata = meta
+
     def __call__(self, string):
         if self.default_url:
             word = self.neg_words.sample(1)['word'].iloc[0]

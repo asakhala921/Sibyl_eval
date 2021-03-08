@@ -63,7 +63,7 @@ TRANSFORMATIONS = [
     WordMix
 ]
 
-
+import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
@@ -147,7 +147,7 @@ def transform_dataset(dataset, num_transforms=2, task_type=None, tran_type=None,
     df = init_transforms(task_type=task_type, tran_type=tran_type, label_type=label_type, meta=True)
     text, label = dataset['text'], dataset['label'] 
     new_text, new_label, trans = [], [], []
-    if tran == 'SIB-mix':
+    if tran_type == 'SIB':
         if type(text) == list:
             text = np.array(text, dtype=np.string_)
             label = pd.get_dummies(label).to_numpy(dtype=np.float)
@@ -175,11 +175,14 @@ def transform_dataset(dataset, num_transforms=2, task_type=None, tran_type=None,
                 else:
                     t_trans.remove(t_name)
                 num_tries += 1
+                if len(batch[0].shape) > 1:
+                    print(t_name)
+                    break
             new_text.extend(batch[0].tolist())
             new_label.extend(batch[1].tolist())
             trans.append(t_trans)
     else:
-        for X, y in tqdm(zip(text, label)):
+        for X, y in tqdm(zip(text, label), total=len(label)):
             t_trans = []
             n = 0
             num_tries = 0
@@ -252,9 +255,9 @@ def transform_dataset_INVSIB(
                 continue
             if 'AbstractBatchTransformation' in t_fn.__class__.__bases__[0].__name__:
                 Xs, ys = sample_Xy(text, label, num_sample=1)
-                Xs.append(X); ys.append(y)   
+                Xs.append(X); ys.append(y) 
                 Xs = [str(x).encode('utf-8') for x in Xs]
-                ys = [one_hot_encode(y, num_classes) for y in ys]
+                ys = [np.squeeze(one_hot_encode(y, num_classes)) for y in ys]
                 (X, y), meta = t_fn((Xs, ys))
                 X, y = X[0], y[0]
             else:
@@ -270,3 +273,14 @@ def transform_dataset_INVSIB(
                 
     new_text = [str(x).encode('utf-8') for x in new_text]
     return np.array(new_text, dtype=np.string_), np.array(new_label), np.array(trans, dtype=np.string_)
+
+def one_hot_encode(y, nb_classes):
+    if isinstance(y, np.ndarray):
+        return y
+    y = np.array(y)
+    res = np.eye(nb_classes)[np.array(y).reshape(-1)]
+    return res.reshape(list(y.shape)+[nb_classes])
+
+def sample_Xy(text, label, num_sample=1):
+    idx = np.random.randint(0, len(text), num_sample)
+    return list(np.array(text)[idx]), list(np.array(label)[idx])    
