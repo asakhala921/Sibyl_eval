@@ -2,6 +2,10 @@ import os
 import pickle
 import numpy as np
 
+
+# consts
+DATA_DIR = 'data'
+
 def chunker(seq, size):
     return (seq[pos:pos + size] for pos in range(0, len(seq), size))
 
@@ -23,6 +27,24 @@ def npy_save(path, file):
         
 def npy_load(path):
     return np.load(path, allow_pickle=True)
+
+def parse_path_list(path_str, default_path, file_extension='.npy'):
+    path_list = []
+    input_split = [default_path] if path_str == '' else path_str.split(',')
+
+    for path in input_split:
+        if os.path.isfile(path) and path.endswith(file_extension):
+            path_list.append(path)
+        elif os.path.isdir(path):
+            for subdir, dirs, files in os.walk(path):
+                for file in files:
+                    sub_path = os.path.join(subdir, file)
+                    if os.path.isfile(sub_path) and sub_path.endswith(file_extension):
+                        path_list.append(sub_path)
+        else:
+            raise FileNotFoundError('[{}] not exists.'.format(path))
+
+    return path_list
 
 class CorrectKCounter:
     def __init__(self, k=1):
