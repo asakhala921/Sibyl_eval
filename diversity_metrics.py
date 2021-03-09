@@ -1,4 +1,5 @@
 # Diversity Metrics
+from text_diversity import TokenSemanticDiversity, SentenceSemanticDiversity, SyntacticDiversity
 from transformers import AutoModel, AutoTokenizer
 from sentence_transformers import SentenceTransformer
 from sklearn.decomposition import PCA
@@ -70,285 +71,81 @@ def get_ttr_tokens(text, tokenizer=None):
     ttr = len(token_ids) / counts.sum()
     return ttr
 
-class TextDiversity:
-    def __init__(self, 
-                 Z_type="token_semantics",
-                 MODEL_NAME="bert-base-uncased", 
-                 batch_size=16, 
-                 use_gpu=True, 
-                 verbose=False
-                ):
+class TSD(TokenSemanticDiversity):
 
-        self.MODEL_NAME = MODEL_NAME
-        self.Z_type = Z_type
-        if self.Z_type == "token_semantics":
-            self.model = AutoModel.from_pretrained(MODEL_NAME)
-        elif self.Z_type == "sentence_semantics":
-            self.model = SentenceTransformer('stsb-distilbert-base')
-        else:
-            self.model = spacy.load("en_core_web_trf")
-        self.tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-        self.undesirable_tokens = [
-            self.tokenizer.pad_token_id, 
-            self.tokenizer.cls_token_id, 
-            self.tokenizer.sep_token_id
-        ]
-        self.batch_size = batch_size
-        self.use_gpu = use_gpu
-        self.device = torch.device('cuda' if use_gpu and torch.cuda.is_available() else 'cpu')
-        self.verbose = verbose
+    use_me = True
+    default_config = {}
 
-        self.species = None
-        self.Z = None
-        self.boe = None
+    def __init__(self, config={}):
+        config = {**super().default_config, **self.default_config, **config} 
+        super().__init__(config)
 
-        # move model to device
-        if isinstance(self.model, torch.nn.Module):
-            self.model.to(self.device)
-    
-    def __call__(self, 
-                 corpus, 
-                 q=1, 
-                 distance_fn=None, 
-                 n_components='auto', 
-                 remove_stopwords=True,
-                 normalize=False,
-                 scale_dist="exp",
-                 sq_reg=False, 
-                 mean_adj=True,
-                 ignore_similarities=False):
-        
-        # get bag_of_embeddings (boe) from model + tokens
-        if self.Z_type == 'token_semantics':
-            boe, species = self.get_embeddings(corpus, 
-                                            n_components=n_components, 
-                                            remove_stopwords=remove_stopwords)
-        elif self.Z_type == 'sentence_semantics':
-            boe, species = self.get_sent_embeddings(corpus)
-        elif self.Z_type == 'sentence_structure':
-            boe, species = self.get_sentstruct_embeddings(corpus, 
-                                            remove_stopwords=remove_stopwords)
-            scale_dist = "invert"
-            distance_fn = spatial.distance.hamming
-            mean_adj = False
+    def __call__(self, response_set):
+        return super().__call__(response_set)
 
-        # get similarity matrix (Z)
-        Z = self.get_emb_similarities(boe, distance_fn, scale_dist, sq_reg, mean_adj)
-        
-        # get diversity
-        num_species = len(species)
-        p = np.full(num_species, 1/num_species)
-        D = self.get_diversity(p, Z, q, normalize, ignore_similarities)
 
-        if self.verbose:
-            ret = {
-                'diversity': D,
-                'diversity_normalized': (D / len(self.species)),
-                'entropy': np.log(D),
-                'species': self.species,
-                'Z': self.Z,
-                'boe': self.boe
-            } 
-        else:
-            ret = {
-                'diversity': D,
-                'diversity_normalized': D / len(self.species),
-            }    
-        
-        return ret
+class SSD(SentenceSemanticDiversity):
 
-    def encode(self, input_ids, attention_mask):
-        self.model.eval()
-        with torch.no_grad():
-            out = self.model(input_ids, attention_mask=attention_mask)
-        emb = out[0]
-        return emb
+    use_me = True
+    default_config = {}
 
-    def get_embeddings(self, corpus, n_components='auto', remove_stopwords=True):
-        # TODO: figure out how to handle BPE breakdown
-        #       of single word into multiple token_ids
-        inputs = self.tokenizer(corpus, return_tensors='pt', padding=True, truncation=True)
-        batches = zip(chunker(inputs.input_ids, self.batch_size), 
-                      chunker(inputs.attention_mask, self.batch_size))
-        if self.verbose:
-            print('getting token embeddings...')
-            batches = tqdm(batches, total=int(len(inputs.input_ids)/self.batch_size))
+    def __init__(self, config={}):
+        config = {**super().default_config, **self.default_config, **config} 
+        super().__init__(config)
 
-        outputs = []
-        for input_ids, attention_mask in batches:
-            emb = self.encode(input_ids.to(self.device), 
-                       attention_mask.to(self.device))
-            outputs.append(emb)
-        embeddings = torch.cat(outputs)
+    def __call__(self, response_set):
+        return super().__call__(response_set)
 
-        # remove undesirable tokens
-        idx = np.isin(inputs['input_ids'],  self.undesirable_tokens, assume_unique=True, invert=True).reshape(-1)
-        tok = np.array(self.tokenizer.convert_ids_to_tokens(inputs.input_ids.view(-1)))[idx]
-        boe = embeddings.view(-1, embeddings.shape[-1])[idx].detach().cpu()
 
-        # remove stopwords
-        if remove_stopwords:
-            idx = np.isin(tok, stopwords.words('english'), invert=True)
-            tok = tok[idx]
-            boe = boe[idx]
+class SD(SyntacticDiversity):
 
-        # compress embedding to speed up similarity matrix computation
-        if n_components == "auto":
-            n_components = min(max(2, len(boe) // 10), boe.shape[-1])
-            if self.verbose:
-                print('Using n_components={}'.format(str(n_components)))
+    use_me = True
+    default_config = {}
 
-        if type(n_components) == int and n_components > 0 and len(boe) > 1:
-            boe = PCA(n_components=n_components).fit_transform(boe)
+    def __init__(self, config={}):
+        config = {**super().default_config, **self.default_config, **config} 
+        super().__init__(config)
 
-        tok, boe = merge_bpe(tok, boe)
+    def __call__(self, response_set):
+        return super().__call__(response_set)
 
-        self.species = tok
-        self.boe = boe
+class TSD_norm(TokenSemanticDiversity):
 
-        return boe, tok
+    use_me = True
+    default_config = {'normalize': True}
 
-    def get_sent_embeddings(self, corpus, n_components='auto'):
-        boe = self.model.encode(corpus)
-        
-        # compress embedding to speed up similarity matrix computation
-        if n_components == "auto":
-            n_components = min(max(2, len(boe) // 10), boe.shape[-1])
-            if self.verbose:
-                print('Using n_components={}'.format(str(n_components)))
+    def __init__(self, config={}):
+        config = {**super().default_config, **self.default_config, **config} 
+        super().__init__(config)
 
-        if type(n_components) == int and n_components > 0 and len(boe) > 1:
-            boe = PCA(n_components=n_components).fit_transform(boe)
+    def __call__(self, response_set):
+        return super().__call__(response_set)
 
-        self.species = corpus
-        self.boe = boe
 
-        return boe, corpus
-    
-    def get_sentstruct_embeddings(self, corpus, part='pos_', part2int=True, remove_stopwords=True):
+class SSD_norm(SentenceSemanticDiversity):
 
-        # convert to spacy docs to get parts
-        doc_parts = []
-        for doc in corpus:
-            doc_ = []
-            for w in self.model(doc):
-                if remove_stopwords and w.text in stopwords.words('english'):
-                    continue
-                part_ = getattr(w, part)
-                doc_.append(part_)
-            doc_parts.append(doc_)
+    use_me = True
+    default_config = {'normalize': True}
 
-        # pad to max sentence doc length
-        pad_to = find_max_list(doc_parts)
-        doc_parts = np.array([s + ['NULL']*(pad_to-len(s)) for s in doc_parts])
+    def __init__(self, config={}):
+        config = {**super().default_config, **self.default_config, **config} 
+        super().__init__(config)
 
-        # convert doc parts to int
-        if part2int:
-            # build dict of unique doc parts
-            part_map = set(itertools.chain(*doc_parts))
-            part_map = {tag: i for i, tag in enumerate(part_map)}
-            # convert to int for distance comparison
-            part2int_fn = np.vectorize(part_map.get)
-            boe = part2int_fn(doc_parts)
-            
-        self.boe = doc_parts
-        self.species = doc_parts
+    def __call__(self, response_set):
+        return super().__call__(response_set)
 
-        return doc_parts, corpus
 
-    def get_emb_similarities(
-        self, 
-        boe, 
-        dist_fn=None, 
-        scale_dist="exp", 
-        sq_reg=True, 
-        mean_adj=True):
-        
-        if dist_fn is None:
-            dist_fn = spatial.distance.chebyshev  
+class SD_norm(SyntacticDiversity):
 
-        num_embeddings = len(boe)
+    use_me = True
+    default_config = {'normalize': True}
 
-        tok_sims = np.ones((num_embeddings, num_embeddings))
-        iu = np.triu_indices(num_embeddings, k=1)
-        il = (iu[1], iu[0])
+    def __init__(self, config={}):
+        config = {**super().default_config, **self.default_config, **config} 
+        super().__init__(config)
 
-        iterable = range(num_embeddings)
-        if self.verbose:
-            print('calculating similarity matrix...')
-            iterable = tqdm(iterable)
-
-        for e1 in iterable:
-            for e2 in range(1, num_embeddings - e1):
-                d = dist_fn(boe[e1], boe[e1 + e2])
-                if scale_dist == "exp":
-                    d = np.exp(-d)
-                elif scale_dist == "invert":
-                    d = 1 - d
-                tok_sims[e1][e1 + e2] = d     
-        tok_sims[il] = tok_sims[iu]
-
-        if sq_reg:
-            tok_sims **= 1.5
-
-        if mean_adj:
-            off_diag = np.where(~np.eye(tok_sims.shape[0],dtype=bool))
-            tok_sims[off_diag] -= tok_sims[off_diag].mean()
-            tok_sims = np.where(tok_sims < 0, 0 , tok_sims)
-
-        self.Z = tok_sims
-
-        return tok_sims    
-
-    def get_diversity(self, p, Z, q=1, normalize=False, ignore_similarities=False):
-        if ignore_similarities:
-            Z = np.eye(len(Z))
-        Zp =  Z @ p
-        if q == 1:
-            D = 1 / np.prod(Zp ** p)
-        elif q == np.inf:
-            D = 1 / Zp.max()
-        else:
-            D = (p * Zp ** (q-1)).sum() ** (1/(1-q))
-        if normalize:
-            D /= len(p)
-        return D    
-
-    def get_diversity_profile(self, 
-                              corpus, 
-                              distance_fn=None, 
-                              n_components=2, 
-                              normalize=False, 
-                              ignore_similarities=False, 
-                              range=None):
-        # get bag_of_embeddings (boe) from model + tokens
-        boe, tok = self.get_embeddings(corpus, n_components)
-
-        # get similarity matrix (Z)
-        Z = self.get_emb_similarities(boe, distance_fn)
-
-        # plot diversity profile
-        num_species = len(num_species)
-        p = np.full(num_species, 1/num_species)
-        
-        if range is None:
-            range = np.arange(0, 101)
-        Ds = []
-        for q in range:
-            D = self.get_diversity(p, Z, q, normalize)
-            Ds.append(D)
-        ax = sns.lineplot(x=range, y=Ds)  
-        ax.set(xlabel="Sensitivity Parameter, $q$", 
-               ylabel="Diversity $^qD(\mathbf{p})$" if ignore_similarities else "Diversity $^qD^{\mathbf{Z}}(\mathbf{p})$", 
-               title="Corpus Diversity Profile")
-        plt.show()
-
-    def get_species_heatmap(self, n=10):
-        g = sns.heatmap(np.around(self.Z[:n,:n], 2), annot=True, annot_kws={"fontsize": 10}, fmt='g')
-        g.set_xticklabels(self.species[:n], rotation=90)
-        g.set_yticklabels(self.species[:n], rotation=0)
-        g.set_title('Token Semantic Similarities')
-        plt.show()
+    def __call__(self, response_set):
+        return super().__call__(response_set)
 
 
 class SelfBleu:

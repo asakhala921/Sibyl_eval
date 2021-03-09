@@ -2,10 +2,6 @@ import os
 import pickle
 import numpy as np
 
-
-# consts
-DATA_DIR = 'data'
-
 def chunker(seq, size):
     return (seq[pos:pos + size] for pos in range(0, len(seq), size))
 
@@ -78,3 +74,28 @@ def get_acc_at_k(logits, y_true, k=2):
     correct = torch.sum(torch.eq(y_idx, out_idx) * y_weights)
     acc = correct / total
     return acc.item()
+
+def merge_bpe(tok, boe, chars="##"):
+    new_tok = []
+    new_boe = []
+
+    emb = []
+    append = ""
+    for t, e in zip(tok[::-1], boe[::-1]):
+        t += append
+        emb.append(e)
+        if t.startswith(chars):
+            append = t.replace(chars, "")
+        else:
+            append = ""
+            new_tok.append(t)
+            new_boe.append(np.stack(emb).mean(axis=0))
+            emb = []  
+    new_tok = np.array(new_tok)[::-1]
+    new_boe = np.array(new_boe)[::-1]
+    
+    return new_tok, new_boe
+
+def find_max_list(lists):
+    list_len = [len(l) for l in lists]
+    return max(list_len)

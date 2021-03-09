@@ -115,3 +115,8 @@ assets/AG_NEWS/INVSIB/label.npy
 assets/AG_NEWS/INV/trans.npy
 assets/AG_NEWS/INV/text.npy
 assets/AG_NEWS/INV/label.npy
+assets/SST2/ORIG/text.npy
+assets/SST2/ORIG/label.npy
+assets/SST2/naturalness_metrics.csv
+assets/AG_NEWS/ORIG/text.npy
+assets/AG_NEWS/ORIG/label.npy
