@@ -3,6 +3,7 @@
 results/
 pretrained/
 logs/
+wandb/
 assets/SST2/sentiment/SIB/trans.npy
 assets/SST2/sentiment/SIB/text.npy
 assets/SST2/sentiment/SIB/label.npy
