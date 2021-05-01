@@ -130,7 +130,8 @@ class TextMix(AbstractBatchTransformation):
             new_targets.append(ohe_targets)
             
         new_data = np.concatenate(new_data)
-        new_targets = np.concatenate(new_targets)
+        new_data = [x.decode() if type(x) == bytes else str(x) for x in new_data]
+        new_targets = np.concatenate(new_targets).tolist()
 
         ret = (new_data, new_targets)
 
@@ -199,11 +200,11 @@ class SentMix(AbstractBatchTransformation):
         """
 
         # TextMix transformation
-        new_data, new_targets = TextMix()(batch, target_pairs, target_prob)
+        new_data, new_targets = TextMix()(batch, target_pairs, target_prob, num_classes)
 
         # mix sentences
         sent_shuffle_ = np.vectorize(sent_shuffle)
-        new_data = np.apply_along_axis(sent_shuffle_, 0, new_data)
+        new_data = np.apply_along_axis(sent_shuffle_, 0, new_data).tolist()
 
         ret = (new_data, new_targets)
 
@@ -272,11 +273,11 @@ class WordMix(AbstractBatchTransformation):
         """
 
         # TextMix transformation
-        new_data, new_targets = TextMix()(batch, target_pairs, target_prob)
+        new_data, new_targets = TextMix()(batch, target_pairs, target_prob, num_classes)
 
         # mix words
         word_shuffle_ = np.vectorize(word_shuffle)
-        new_data = np.apply_along_axis(word_shuffle_, 0, new_data)
+        new_data = np.apply_along_axis(word_shuffle_, 0, new_data).tolist()
 
         ret = (new_data, new_targets)
 
