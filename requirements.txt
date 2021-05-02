@@ -1,8 +1,8 @@
 emoji_translate
 patternfork-nosql
 spacy
-datasets
-transformers
+datasets==1.6.1
+transformers==4.2.0
 scikit-learn
 seaborn
 
