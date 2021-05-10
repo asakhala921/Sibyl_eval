@@ -1,6 +1,6 @@
-# SIBAttack
+# Sibyl
 
-SIBAttack is a tool for generating new data from what you have already. Transform your data in over 35 different ways by either selecting one or sampling `n` transformations at a time. 
+Sibyl is a tool for generating new data from what you have already. Transform your data in over 35 different ways by either selecting one or sampling `n` transformations at a time. 
 
 There are two primary kinds of transformations:
 - Invariant (INV) : transform the input, but the expected output remains the same.
