@@ -1,0 +1,10 @@
+,eval_loss,eval_accuracy,eval_runtime,eval_samples_per_second,epoch,run,test
+0,0.3205556571483612,0.9478841870824053,21.8997,307.539,15.28,./results/bert-base-uncased-targeted-TextMix,ORIG
+1,0.2529617249965668,0.948626577579807,21.7917,309.063,7.78,./results/bert-base-uncased-targeted-SentMix,ORIG
+2,0.2585805356502533,0.9328878990348923,22.0245,305.795,8.89,./results/bert-base-uncased-targeted-WordMix,ORIG
+3,0.28808724880218506,0.9260579064587974,20.8713,322.692,6.67,./results/roberta-base-targeted-TextMix,ORIG
+4,0.2426948845386505,0.9312546399406088,21.06,319.8,3.61,./results/roberta-base-targeted-SentMix,ORIG
+5,0.3388954699039459,0.9171492204899777,21.1711,318.122,3.89,./results/roberta-base-targeted-WordMix,ORIG
+6,0.28366708755493164,0.9250185597624351,33.0223,203.953,4.45,./results/xlnet-base-cased-targeted-TextMix,ORIG
+7,0.2852342128753662,0.9475872308834447,33.0679,203.672,16.12,./results/xlnet-base-cased-targeted-SentMix,ORIG
+8,0.30975812673568726,0.9198218262806236,32.9464,204.423,4.72,./results/xlnet-base-cased-targeted-WordMix,ORIG
