@@ -121,3 +121,14 @@ assets/SST2/ORIG/label.npy
 assets/SST2/naturalness_metrics.csv
 assets/AG_NEWS/ORIG/text.npy
 assets/AG_NEWS/ORIG/label.npy
+data/cifar-10-python.tar.gz
+data/cifar-10-batches-py/test_batch
+data/cifar-10-batches-py/readme.html
+data/cifar-10-batches-py/data_batch_5
+data/cifar-10-batches-py/data_batch_4
+data/cifar-10-batches-py/data_batch_3
+data/cifar-10-batches-py/data_batch_2
+data/cifar-10-batches-py/data_batch_1
+data/cifar-10-batches-py/batches.meta
+mechanical_turks_examples_raw.csv
+mechanical_turks_examples.csv
