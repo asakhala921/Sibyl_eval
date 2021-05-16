@@ -88,59 +88,73 @@ def init_transforms(task_type=None, tran_type=None, label_type=None, meta=True):
     df.reset_index(drop=True, inplace=True)
     return df
 
-def transform_test_suites(test_suites, num_transforms=2, task_type=None, tran_type=None, label_type=None):
+def transform_test_suites(
+    test_suites, 
+    num_INV_required=1, 
+    num_SIB_required=1, 
+    task_type=None, 
+    tran_type=None, 
+    label_type=None,
+    one_hot=True):
+    
     df = init_transforms(task_type=task_type, tran_type=tran_type, label_type=label_type, meta=True)
+
     new_test_suites = {}
     for i, test_suite in tqdm(test_suites.items()):
-        if tran=='SIB-mix':
-            if type(test_suite['data']) == list:
-                data = np.array(test_suite['data'], dtype=np.string_)
-                targets = np.array(test_suite['target'])
-            batch = (test_suite['data'], test_suite['target'])
-            ts = []
-            n = 0
+        new_text, new_label, trans = [], [], []
+        text, label = test_suite.items()
+        text, label = text[1], label[1]
+        num_classes = len(np.unique(label))   
+        for X, y in zip(text, label): 
+            t_trans = []
             num_tries = 0
-            while n < num_transforms:
+            num_INV_applied = 0
+            while num_INV_applied < num_INV_required:
                 if num_tries > 25:
                     break
-                t_df   = df.sample(1)
+                t_df   = df[df['tran_type']=='INV'].sample(1)
                 t_fn   = t_df['tran_fn'].iloc[0]
-                t_name = t_df['transformation'].iloc[0]
-                if t_name in ts:
+                t_name = t_df['transformation'].iloc[0]                
+                if t_name in trans:
                     continue
-                else:
-                    ts.append(t_name)
-                batch, meta = t_fn(batch)
+                X, y, meta = t_fn.transform_Xy(str(X), y)
+                if one_hot:
+                    y = one_hot_encode(y, num_classes)
                 if meta['change']:
-                    n += 1
+                    num_INV_applied += 1
+                    t_trans.append(t_name)
+                num_tries += 1
+
+            num_tries = 0
+            num_SIB_applied = 0       
+            while num_SIB_applied < num_SIB_required:
+                if num_tries > 25:
+                    break
+                t_df   = df[df['tran_type']=='SIB'].sample(1)
+                t_fn   = t_df['tran_fn'].iloc[0]
+                t_name = t_df['transformation'].iloc[0]                
+                if t_name in trans:
+                    continue
+                if 'AbstractBatchTransformation' in t_fn.__class__.__bases__[0].__name__:
+                    Xs, ys = sample_Xy(text, label, num_sample=1)
+                    Xs.append(X); ys.append(y) 
+                    Xs = [str(x) for x in Xs]
+                    ys = [np.squeeze(one_hot_encode(y, num_classes)) for y in ys]
+                    (X, y), meta = t_fn((Xs, ys), num_classes=num_classes)
+                    X, y = X[0], y[0]
                 else:
-                    ts.remove(t_name)
-            new_test_suites[i] = {'data': batch[0], 'target': batch[1], 'ts': ts}
-        else: 
-            new_X, new_y, new_ts = [], [], []
-            for X, y in zip(test_suite['data'], test_suite['target']):
-                ts = []
-                n = 0
-                num_tries = 0
-                while n < num_transforms:
-                    if num_tries > 25:
-                        break
-                    t_df   = df.sample(1)
-                    t_fn   = t_df['tran_fn'].iloc[0]
-                    t_name = t_df['transformation'].iloc[0]
-                    if t_name in ts:
-                        continue
-                    else:
-                        ts.append(t_name)
                     X, y, meta = t_fn.transform_Xy(str(X), y)
-                    if meta['change']:
-                        n += 1
-                    else:
-                        ts.remove(t_name)
-                new_X.append(X)
-                new_y.append(y)
-                new_ts.append(ts)
-            new_test_suites[i] = {'data': new_X, 'target': new_y, 'ts': new_ts}
+                if meta['change']:
+                    num_SIB_applied += 1
+                    t_trans.append(t_name)
+                num_tries += 1
+
+            new_text.append(X)
+            new_label.append(y)
+            trans.append(t_trans)
+        
+        new_test_suites[i] = {'data': new_text, 'target': new_label, 'ts': trans}
+        
     return new_test_suites
 
 def transform_dataset(dataset, num_transforms=2, task_type=None, tran_type=None, label_type=None):
@@ -176,7 +190,7 @@ def transform_dataset(dataset, num_transforms=2, task_type=None, tran_type=None,
                     t_trans.remove(t_name)
                 num_tries += 1
                 if len(batch[0].shape) > 1:
-                    print(t_name)
+                    # print(t_name)
                     break
             new_text.extend(batch[0].tolist())
             new_label.extend(batch[1].tolist())
