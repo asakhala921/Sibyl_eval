@@ -1,0 +1,91 @@
+id,MODEL_NAME,dataset,tran,test_acc,tester_type,model_path
+0,GLUE Human Benchmark,SST2,ORIG,0.98,human,
+1,Mturk,SST2,INV,0.87,human,
+2,Mturk,SST2,SIB,0.88,human,
+3,Mturk,SST2,INVSIB,0.9,human,
+4,Mturk,SST2,TextMix,0.85,human,
+5,Mturk,SST2,SentMix,0.87,human,
+6,Mturk,SST2,WordMix,0.84,human,
+7,N/A,AG_NEWS,ORIG,1,human,
+8,Mturk,AG_NEWS,INV,0.93,human,
+9,Mturk,AG_NEWS,SIB,0.65,human,
+10,Mturk,AG_NEWS,INVSIB,0.78,human,
+11,Mturk,AG_NEWS,TextMix,0.86,human,
+12,Mturk,AG_NEWS,SentMix,0.88,human,
+13,Mturk,AG_NEWS,WordMix,0.82,human,
+14,textattack/bert-base-uncased-SST-2,SST2,ORIG,0.99,model,
+15,textattack/bert-base-uncased-SST-2,SST2,INV,0.74,model,
+16,textattack/bert-base-uncased-SST-2,SST2,SIB,0.71,model,
+17,textattack/bert-base-uncased-SST-2,SST2,INVSIB,0.72,model,
+18,textattack/bert-base-uncased-SST-2,SST2,TextMix,0.82,model,
+19,textattack/bert-base-uncased-SST-2,SST2,SentMix,0.81,model,
+20,textattack/bert-base-uncased-SST-2,SST2,WordMix,0.74,model,
+21,textattack/roberta-base-SST-2,SST2,ORIG,0.96,model,
+22,textattack/roberta-base-SST-2,SST2,INV,0.76,model,
+23,textattack/roberta-base-SST-2,SST2,SIB,0.68,model,
+24,textattack/roberta-base-SST-2,SST2,INVSIB,0.72,model,
+25,textattack/roberta-base-SST-2,SST2,TextMix,0.83,model,
+26,textattack/roberta-base-SST-2,SST2,SentMix,0.84,model,
+27,textattack/roberta-base-SST-2,SST2,WordMix,0.75,model,
+28,textattack/bert-base-uncased-ag-news,AG_NEWS,ORIG,1,model,
+29,textattack/bert-base-uncased-ag-news,AG_NEWS,INV,0.87,model,
+30,textattack/bert-base-uncased-ag-news,AG_NEWS,SIB,0.63,model,
+31,textattack/bert-base-uncased-ag-news,AG_NEWS,INVSIB,0.75,model,
+32,textattack/bert-base-uncased-ag-news,AG_NEWS,TextMix,0.64,model,
+33,textattack/bert-base-uncased-ag-news,AG_NEWS,SentMix,0.48,model,
+34,textattack/bert-base-uncased-ag-news,AG_NEWS,WordMix,0.6,model,
+35,textattack/roberta-base-ag-news,AG_NEWS,ORIG,0.99,model,
+36,textattack/roberta-base-ag-news,AG_NEWS,INV,0.84,model,
+37,textattack/roberta-base-ag-news,AG_NEWS,SIB,0.61,model,
+38,textattack/roberta-base-ag-news,AG_NEWS,INVSIB,0.7,model,
+39,textattack/roberta-base-ag-news,AG_NEWS,TextMix,0.61,model,
+40,textattack/roberta-base-ag-news,AG_NEWS,SentMix,0.47,model,
+41,textattack/roberta-base-ag-news,AG_NEWS,WordMix,0.55,model,
+42,Mturk,CIFAR10,ORIG,0.78,human,
+43,Mturk,CIFAR10,INV,0.52,human,
+44,Mturk,CIFAR10,Mixup,0.68,human,
+45,Mturk,CIFAR10,Cutmix,0.55,human,
+46,Mturk,CIFAR10,Cutmix2,0.58,human,
+47,Mturk,CIFAR10,Tile,0.97,human,
+48,Mturk,MNIST,ORIG,1,human,
+49,Mturk,MNIST,INV,0.9,human,
+50,Mturk,MNIST,Mixup,0.8,human,
+51,Mturk,MNIST,Cutmix,0.7,human,
+52,Mturk,MNIST,Cutmix2,0.87,human,
+53,Mturk,MNIST,Tile,1,human,
+54,cifar10_shufflenetv2_x2_0,CIFAR10,ORIG,0.94375,model,
+55,cifar10_shufflenetv2_x2_0,CIFAR10,INV,0.60375,model,
+56,cifar10_shufflenetv2_x2_0,CIFAR10,Mixup,0.722729574,model,
+57,cifar10_shufflenetv2_x2_0,CIFAR10,Cutmix,0.533935028,model,
+58,cifar10_shufflenetv2_x2_0,CIFAR10,Cutmix2,0.517656283,model,
+59,cifar10_shufflenetv2_x2_0,CIFAR10,Tile,0.498125,model,
+60,cifar10_resnet56,CIFAR10,ORIG,0.9475,model,
+61,cifar10_resnet56,CIFAR10,INV,0.67375,model,
+62,cifar10_resnet56,CIFAR10,Mixup,0.67894472,model,
+63,cifar10_resnet56,CIFAR10,Cutmix,0.541444427,model,
+64,cifar10_resnet56,CIFAR10,Cutmix2,0.627339518,model,
+65,cifar10_resnet56,CIFAR10,Tile,0.500625,model,
+66,cifar10_mobilenetv2_x1_0,CIFAR10,ORIG,0.945,model,
+67,cifar10_mobilenetv2_x1_0,CIFAR10,INV,0.65625,model,
+68,cifar10_mobilenetv2_x1_0,CIFAR10,Mixup,0.703240372,model,
+69,cifar10_mobilenetv2_x1_0,CIFAR10,Cutmix2,0.560417193,model,
+70,cifar10_mobilenetv2_x1_0,CIFAR10,Tile,0.51625,model,
+71,cifar10_mobilenetv2_x1_0,CIFAR10,Cutmix,0.527204435,model,
+72,PreAct ResNet,MNIST,ORIG,0.979,model,augs/mix\cutmix2\results\MNIST\cutmix2\t0.0_r0.0\model_state.pth
+73,PreAct ResNet,MNIST,INV,0.6638,model,augs/mix\cutmix2\results\MNIST\cutmix2\t0.0_r0.0\model_state.pth
+74,PreAct ResNet,MNIST,Mixup,0.735620305,model,augs/mix\cutmix2\results\MNIST\cutmix2\t0.0_r0.0\model_state.pth
+75,PreAct ResNet,MNIST,Cutmix,0.675211411,model,augs/mix\cutmix2\results\MNIST\cutmix2\t0.0_r0.0\model_state.pth
+76,PreAct ResNet,MNIST,Cutmix2,0.491545302,model,augs/mix\cutmix2\results\MNIST\cutmix2\t0.0_r0.0\model_state.pth
+77,PreAct ResNet,MNIST,Tile,0.3336,model,augs/mix\cutmix2\results\MNIST\cutmix2\t0.0_r0.0\model_state.pth
+78,PreAct ResNet,MNIST,ORIG,0.9893,model,augs/mix\mixup2\results\MNIST\mixup2\t0.0\model_state.pth
+79,PreAct ResNet,MNIST,INV,0.6938,model,augs/mix\mixup2\results\MNIST\mixup2\t0.0\model_state.pth
+80,PreAct ResNet,MNIST,Mixup,0.832273293,model,augs/mix\mixup2\results\MNIST\mixup2\t0.0\model_state.pth
+81,PreAct ResNet,MNIST,Cutmix,0.606796211,model,augs/mix\mixup2\results\MNIST\mixup2\t0.0\model_state.pth
+82,PreAct ResNet,MNIST,Cutmix2,0.552871766,model,augs/mix\mixup2\results\MNIST\mixup2\t0.0\model_state.pth
+83,PreAct ResNet,MNIST,Tile,0.368625001,model,augs/mix\mixup2\results\MNIST\mixup2\t0.0\model_state.pth
+84,PreAct ResNet,MNIST,ORIG,0.9713,model,augs/mix\tile\results\MNIST\tile\t0.0_n4\model_state.pth
+85,PreAct ResNet,MNIST,INV,0.6729,model,augs/mix\tile\results\MNIST\tile\t0.0_n4\model_state.pth
+86,PreAct ResNet,MNIST,Mixup,0.752575649,model,augs/mix\tile\results\MNIST\tile\t0.0_n4\model_state.pth
+87,PreAct ResNet,MNIST,Cutmix,0.55687232,model,augs/mix\tile\results\MNIST\tile\t0.0_n4\model_state.pth
+88,PreAct ResNet,MNIST,Cutmix2,0.580601906,model,augs/mix\tile\results\MNIST\tile\t0.0_n4\model_state.pth
+89,PreAct ResNet,MNIST,Tile,0.396275,model,augs/mix\tile\results\MNIST\tile\t0.0_n4\model_state.pth
