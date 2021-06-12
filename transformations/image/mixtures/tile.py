@@ -115,10 +115,3 @@ class TileCollator:
             self.num_classes
         )
         return batch
-
-class TileCriterion:
-    def __init__(self, reduction=None):
-        self.criterion = nn.BCEWithLogitsLoss(reduction=reduction)
-
-    def __call__(self, preds, targets):
-        return self.criterion(preds, targets)

@@ -125,10 +125,3 @@ class Mixup2Collator:
             self.num_classes
         )
         return batch
-
-class Mixup2Criterion:
-    def __init__(self, reduction=None):
-        self.criterion = nn.BCEWithLogitsLoss(reduction=reduction)
-
-    def __call__(self, preds, targets):
-        return self.criterion(preds, targets)

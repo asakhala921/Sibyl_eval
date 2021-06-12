@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from ..utils import *
 import pandas as pd
  
 class AbstractBatchTransformation(ABC):

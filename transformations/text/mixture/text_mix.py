@@ -1,5 +1,5 @@
 from ..abstract_batch_transformation import AbstractBatchTransformation
-from ..abstract_transformation import one_hot_encode
+from ...utils import one_hot_encode
 import numpy as np
 import pandas as pd
 import itertools

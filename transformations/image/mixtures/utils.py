@@ -20,7 +20,12 @@ def get_confusion_matrix(model, dataloader, device, normalize=True):
         confusion_matrix = confusion_matrix / confusion_matrix.sum(dim=0)
     return confusion_matrix
 
+def get_most_confused_per_class(confusion_matrix):
+    idx = torch.arange(len(confusion_matrix))
+    cnf = confusion_matrix.fill_diagonal_(0).max(dim=1)[1]
+    return torch.stack((idx, cnf)).T.tolist()
+
 def get_k_most_confused_per_class(confusion_matrix, k):
     lbl = torch.arange(len(confusion_matrix))
     cnf = confusion_matrix.fill_diagonal_(0).topk(k, dim=1)[-1]
-    return lbl, cnf 
+    return lbl, cnf

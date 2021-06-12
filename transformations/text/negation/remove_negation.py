@@ -43,6 +43,7 @@ class RemoveNegation(AbstractTransformation):
         """
         # This removes all negations in the doc. I should maybe add an option to remove just some.
         doc = self.nlp(string)
+        doc_len = len(doc)
         notzs = [i for i, z in enumerate(doc) if z.lemma_ == 'not' or z.dep_ == 'neg']
         new = []
         for notz in notzs:
@@ -91,9 +92,17 @@ class RemoveNegation(AbstractTransformation):
                         params = list(p[0])
                 to_add = ' '+ pattern.en.conjugate(after.text, *params) + ' '
                 id_end = notz + 2
-            ret += doc[start:id_start].text + to_add
+            # print(doc)
+            # print(start)
+            # print(id_start)
+            # print(to_add)
+            if start == id_start or start >= doc_len or id_start >= doc_len:
+                continue
+            else:
+                ret += doc[start:id_start].text + to_add
             start = id_end
-        ret += doc[id_end:].text
+        if id_end < doc_len:
+            ret += doc[id_end:].text
         assert type(ret) == str
         meta = {'change': string!=ret}
         if self.metadata: return ret, meta

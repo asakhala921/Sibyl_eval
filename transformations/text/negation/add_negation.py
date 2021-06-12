@@ -48,6 +48,7 @@ class AddNegation(AbstractTransformation):
 
     def wrapper(self, string):
         doc = self.nlp(string)
+        doc_len = len(doc)
         for sentence in doc.sents:
             if len(sentence) < 3:
                 continue
@@ -66,11 +67,17 @@ class AddNegation(AbstractTransformation):
                 if '?' in sentence.text:
                     continue
                 if root.text.lower() in ['is', 'was', 'were', 'am', 'are', '\'s', '\'re', '\'m']:
-                    ret = doc[:root_id + 1].text + ' not ' + doc[root_id + 1:].text
+                    if root_id + 1 >= doc_len:
+                        ret = string
+                    else:
+                        ret = doc[:root_id + 1].text + ' not ' + doc[root_id + 1:].text
                     assert type(ret) == str
                     return ret
                 else:
-                    ret = doc[:root_id].text + ' not ' + doc[root_id:].text
+                    if root_id == 0:
+                        ret = doc[root_id].text + ' not ' + doc[root_id:].text
+                    else:    
+                        ret = doc[:root_id].text + ' not ' + doc[root_id:].text
                     assert type(ret) == str
                     return ret
             else:
@@ -88,14 +95,20 @@ class AddNegation(AbstractTransformation):
                         else:
                             fixed = doc[aux.i].text.rstrip('n') + 'n\'t' if lemma != 'will' else 'won\'t'
                         fixed = ' %s ' % fixed
-                        ret = doc[:aux.i].text + fixed + doc[aux.i + 1:].text
+                        if aux.i == 0:
+                            ret = doc[aux.i].text + fixed + doc[aux.i + 1:].text
+                        else:
+                            ret = doc[:aux.i].text + fixed + doc[aux.i + 1:].text
                         assert type(ret) == str
                         return ret
-                    ret = doc[:root_id].text + ' not ' + doc[root_id:].text
+                    if root_id  == 0:
+                        ret = doc[root_id].text + ' not ' + doc[root_id:].text
+                    else:
+                        ret = doc[:root_id].text + ' not ' + doc[root_id:].text
                     assert type(ret) == str
                     return ret
                 else:
-                    # TODO: does, do, etc. Remover return None de cima
+                    # TODO: does, do, etc. 
                     subj = [x for x in sentence if x.dep_ in ['csubj', 'nsubj']]
                     p = pattern.en.tenses(root.text)
                     tenses = collections.Counter([x[0] for x in pattern.en.tenses(root.text)]).most_common(1)
@@ -113,7 +126,16 @@ class AddNegation(AbstractTransformation):
                     else:
                         do = 'not'
                         new_root = root.text
-                    ret = '%s %s %s %s' % (doc[:root_id].text, do, new_root,  doc[root_id + 1:].text)
+                    # print(doc)
+                    # print(len(doc))
+                    # print(root_id)
+                    # print(do)
+                    # print(new_root)
+                    # print(doc[root_id + 1:].text)
+                    if root_id == 0 or root_id + 1 >= doc_len:
+                        ret = string
+                    else:
+                        ret = '%s %s %s %s' % (doc[:root_id].text, do, new_root, doc[root_id + 1:].text)
                     assert type(ret) == str
                     return ret
 

@@ -5,8 +5,9 @@ datasets==1.6.1
 transformers==4.2.0
 scikit-learn
 seaborn
-textattack
-cleverhans
+randaugment
+umap
+torch==1.8.1+cu102
 
 ## dev
 # jupyter

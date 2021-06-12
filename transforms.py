@@ -270,9 +270,9 @@ def transform_dataset_INVSIB(
             if 'AbstractBatchTransformation' in t_fn.__class__.__bases__[0].__name__:
                 Xs, ys = sample_Xy(text, label, num_sample=1)
                 Xs.append(X); ys.append(y) 
-                Xs = [str(x).encode('utf-8') for x in Xs]
+                Xs = [str(x) for x in Xs]
                 ys = [np.squeeze(one_hot_encode(y, num_classes)) for y in ys]
-                (X, y), meta = t_fn((Xs, ys))
+                (X, y), meta = t_fn((Xs, ys),num_classes=num_classes)
                 X, y = X[0], y[0]
             else:
                 X, y, meta = t_fn.transform_Xy(str(X), y)
