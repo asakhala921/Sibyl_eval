@@ -99,3 +99,8 @@ def merge_bpe(tok, boe, chars="##"):
 def find_max_list(lists):
     list_len = [len(l) for l in lists]
     return max(list_len)
+
+
+def sample_Xy(text, label, num_sample=1):
+    idx = np.random.randint(0, len(text), num_sample)
+    return list(np.array(text)[idx]), list(np.array(label)[idx])    

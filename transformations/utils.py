@@ -9,7 +9,7 @@ def one_hot_encode(y, nb_classes):
     if y.shape[-1] == nb_classes:
         return y
     res = np.eye(nb_classes)[y.reshape(-1)]
-    return res.reshape(list(y.shape)+[nb_classes])
+    return res.reshape(list(y.shape)+[nb_classes]).squeeze()
 
 def soften_label(y, num_classes=None):
     if not num_classes:

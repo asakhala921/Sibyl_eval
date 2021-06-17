@@ -63,9 +63,13 @@ TRANSFORMATIONS = [
     WordMix
 ]
 
+import torch
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+
+from utils import *
+from transformations.utils import *
 
 def init_transforms(task_type=None, tran_type=None, label_type=None, meta=True):
     df_all = []
@@ -288,13 +292,132 @@ def transform_dataset_INVSIB(
     new_text = [str(x).encode('utf-8') for x in new_text]
     return np.array(new_text, dtype=np.string_), np.array(new_label), np.array(trans, dtype=np.string_)
 
-def one_hot_encode(y, nb_classes):
-    if isinstance(y, np.ndarray):
-        return y
-    y = np.array(y)
-    res = np.eye(nb_classes)[np.array(y).reshape(-1)]
-    return res.reshape(list(y.shape)+[nb_classes])
 
-def sample_Xy(text, label, num_sample=1):
-    idx = np.random.randint(0, len(text), num_sample)
-    return list(np.array(text)[idx]), list(np.array(label)[idx])    
+class SibylCollator:
+    """
+        tokenize_fn       : tokenizer 
+        transform         : a particular initialized transform (e.g. TextMix()) to apply to the inputs (overrides random sampling)
+        num_sampled_INV   : number of uniformly sampled INV transforms to apply upon the inputs 
+        num_sampled_SIB=1 : number of uniformly sampled SIB transforms to apply upon the inputs 
+        task_type         : filter on transformations for task type [topic, sentiment]
+        tran_type         : filter on transformations for tran type [INV, SIB]
+        label_type        : filter on transformations for task type [hard, soft]
+        one_hot           : whether or not to one-hot-encode the targets
+        transform_prob    : probability of transforming the inputs at all
+        target_pairs      : the class sets to mix
+        target_prob       : probability of targeting mixture mutations for particular classes
+        num_classes       : number of classes, used for one-hot-encoding
+    """
+    def __init__(self, 
+                 tokenize_fn, 
+                 transform=None, 
+                 num_sampled_INV=0, 
+                 num_sampled_SIB=0, 
+                 task_type=None, 
+                 tran_type=None, 
+                 label_type=None,
+                 one_hot=True,
+                 transform_prob=1.0, 
+                 target_pairs=[], 
+                 target_prob=1.0, 
+                 num_classes=2):
+        
+        self.tokenize_fn = tokenize_fn
+        self.transform = transform
+        self.num_sampled_INV = num_sampled_INV
+        self.num_sampled_SIB = num_sampled_SIB
+        self.task_type = task_type
+        self.tran_type = tran_type
+        self.label_type = label_type
+        self.one_hot = one_hot
+        self.transform_prob = transform_prob
+        self.target_pairs = target_pairs
+        self.target_prob = target_prob
+        self.num_classes = num_classes
+
+        self.transforms_df = init_transforms(task_type=task_type, tran_type=tran_type, label_type=label_type, meta=True)
+
+        if (not transform and num_sampled_INV == 0 and num_sampled_SIB == 0) or (len(self.transforms_df) == 0):
+            raise ValueError("Must specify a particular transform or a value for num_sampled_INV / num_sampled_SIB, otherwise no transforms will be applied.")
+
+        if self.transform:
+            print("SibylCollator initialized with {}".format(transform.__class__.__name__))
+        else: 
+            print("SibylCollator initialized with num_sampled_INV={} and num_sampled_SIB={}".format(num_sampled_INV, num_sampled_SIB))
+
+        
+    def __call__(self, batch):
+        text = [x['text'] for x in batch]
+        labels = [x['label'] for x in batch]
+        if torch.rand(1) < self.transform_prob:
+
+
+            if transform:
+                text, labels = self.transform(
+                    (text, labels), 
+                    self.target_pairs,   
+                    self.target_prob,
+                    self.num_classes
+                )
+            else:
+                new_text, new_label, trans = [], [], []
+                for X, y in tqdm(zip(text, label), total=len(label)): 
+                    t_trans = []
+
+                    num_tries = 0
+                    num_INV_applied = 0
+                    while num_INV_applied < self.num_sampled_INV:
+                        if num_tries > 25:
+                            break
+                        t_df   = self.transforms_df[self.transforms_df['tran_type']=='INV'].sample(1)
+                        t_fn   = t_df['tran_fn'].iloc[0]
+                        t_name = t_df['transformation'].iloc[0]                
+                        if t_name in trans:
+                            continue
+                        X, y, meta = t_fn.transform_Xy(str(X), y)
+                        if self.one_hot:
+                            y = one_hot_encode(y, num_classes)
+                        if meta['change']:
+                            num_INV_applied += 1
+                            t_trans.append(t_name)
+                        num_tries += 1
+
+                    num_tries = 0
+                    num_SIB_applied = 0       
+                    while num_SIB_applied < num_SIB_required:
+                        if num_tries > 25:
+                            break
+                        t_df   = self.transforms_df[self.transforms_df['tran_type']=='SIB'].sample(1)
+                        t_fn   = t_df['tran_fn'].iloc[0]
+                        t_name = t_df['transformation'].iloc[0]                
+                        if t_name in trans:
+                            continue
+                        if 'AbstractBatchTransformation' in t_fn.__class__.__bases__[0].__name__:
+                            Xs, ys = sample_Xy(text, label, num_sample=1)
+                            Xs.append(X); ys.append(y) 
+                            Xs = [str(x) for x in Xs]
+                            ys = [np.squeeze(one_hot_encode(y, num_classes)) for y in ys]
+                            (X, y), meta = t_fn((Xs, ys), self.target_pairs, self.target_prob, self.num_classes)
+                            X, y = X[0], y[0]
+                        else:
+                            X, y, meta = t_fn.transform_Xy(str(X), y)
+                        if meta['change']:
+                            num_SIB_applied += 1
+                            t_trans.append(t_name)
+                        num_tries += 1
+
+                    new_text.append(X)
+                    new_label.append(y)
+                    trans.append(t_trans)
+                                 
+                text = np.array(new_text, dtype=np.string_)
+                labels = np.array(new_label)               
+
+        labels = torch.tensor(labels)
+        if len(labels.shape) == 1:
+            labels = torch.nn.functional.one_hot(labels, num_classes=self.num_classes)
+        batch = self.tokenize_fn(text)
+        batch['labels'] = labels
+        batch.pop('idx', None)
+        batch.pop('label', None)
+        return batch

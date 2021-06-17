@@ -132,3 +132,9 @@ data/cifar-10-batches-py/data_batch_1
 data/cifar-10-batches-py/batches.meta
 mechanical_turks_examples_raw.csv
 mechanical_turks_examples.csv
+Batch_4447072_batch_results.xlsx
+Batch_4454712_batch_results.xlsx
+mechanical_turks_examples2.csv
+mechanical_turks_examples_raw2.csv
+mechanical_turks_image_examples.csv
+mturks/img/mturks_img_template.html
