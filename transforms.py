@@ -426,8 +426,8 @@ class SibylCollator:
         if len(labels.shape) == 1:
             labels = labels.long()
 
-        # if self.one_hot and len(labels.shape) == 1:
-        #     labels = torch.nn.functional.one_hot(labels, num_classes=self.num_classes)
+        if self.one_hot and len(labels.shape) == 1 and not self.reduce_mixed:
+            labels = torch.nn.functional.one_hot(labels, num_classes=self.num_classes)
         batch = self.tokenize_fn(text)
         batch['labels'] = labels
         batch.pop('idx', None)
