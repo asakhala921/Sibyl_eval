@@ -306,6 +306,7 @@ class SibylCollator:
         transform_prob    : probability of transforming the inputs at all
         target_pairs      : the class sets to mix
         target_prob       : probability of targeting mixture mutations for particular classes
+        reduce_mixed      : label previously mixed classes to be a new-hard label class
         num_classes       : number of classes, used for one-hot-encoding
     """
     def __init__(self, 
@@ -320,6 +321,7 @@ class SibylCollator:
                  transform_prob=1.0, 
                  target_pairs=[], 
                  target_prob=1.0, 
+                 reduce_mixed=False,
                  num_classes=2):
         
         self.tokenize_fn = tokenize_fn
@@ -333,6 +335,7 @@ class SibylCollator:
         self.transform_prob = transform_prob
         self.target_pairs = target_pairs
         self.target_prob = target_prob
+        self.reduce_mixed = reduce_mixed
         self.num_classes = num_classes
 
         self.transforms_df = init_transforms(task_type=task_type, tran_type=tran_type, label_type=label_type, meta=True)
@@ -352,7 +355,7 @@ class SibylCollator:
         if torch.rand(1) < self.transform_prob:
 
 
-            if transform:
+            if self.transform:
                 text, labels = self.transform(
                     (text, labels), 
                     self.target_pairs,   
@@ -360,8 +363,8 @@ class SibylCollator:
                     self.num_classes
                 )
             else:
-                new_text, new_label, trans = [], [], []
-                for X, y in tqdm(zip(text, label), total=len(label)): 
+                new_text, new_labels, trans = [], [], []
+                for X, y in zip(text, labels): 
                     t_trans = []
 
                     num_tries = 0
@@ -376,7 +379,7 @@ class SibylCollator:
                             continue
                         X, y, meta = t_fn.transform_Xy(str(X), y)
                         if self.one_hot:
-                            y = one_hot_encode(y, num_classes)
+                            y = one_hot_encode(y, self.num_classes)
                         if meta['change']:
                             num_INV_applied += 1
                             t_trans.append(t_name)
@@ -384,7 +387,7 @@ class SibylCollator:
 
                     num_tries = 0
                     num_SIB_applied = 0       
-                    while num_SIB_applied < num_SIB_required:
+                    while num_SIB_applied < self.num_sampled_SIB:
                         if num_tries > 25:
                             break
                         t_df   = self.transforms_df[self.transforms_df['tran_type']=='SIB'].sample(1)
@@ -393,29 +396,38 @@ class SibylCollator:
                         if t_name in trans:
                             continue
                         if 'AbstractBatchTransformation' in t_fn.__class__.__bases__[0].__name__:
-                            Xs, ys = sample_Xy(text, label, num_sample=1)
+                            Xs, ys = sample_Xy(text, labels, num_sample=1)
                             Xs.append(X); ys.append(y) 
                             Xs = [str(x) for x in Xs]
-                            ys = [np.squeeze(one_hot_encode(y, num_classes)) for y in ys]
+                            ys = [np.squeeze(one_hot_encode(y, self.num_classes)) for y in ys]
                             (X, y), meta = t_fn((Xs, ys), self.target_pairs, self.target_prob, self.num_classes)
                             X, y = X[0], y[0]
                         else:
                             X, y, meta = t_fn.transform_Xy(str(X), y)
+                            if self.one_hot:
+                                y = one_hot_encode(y, self.num_classes)
                         if meta['change']:
                             num_SIB_applied += 1
                             t_trans.append(t_name)
                         num_tries += 1
 
                     new_text.append(X)
-                    new_label.append(y)
-                    trans.append(t_trans)
-                                 
-                text = np.array(new_text, dtype=np.string_)
-                labels = np.array(new_label)               
+                    new_labels.append(y)
+                    trans.append(t_trans)            
+                text = new_text   
+                labels = new_labels
 
-        labels = torch.tensor(labels)
+        labels = np.array(labels)  
+        if self.reduce_mixed and len(labels.shape) >= 2:
+            labels = torch.tensor([np.argmax(y) if i == 1 else self.num_classes for (i, y) in zip(np.count_nonzero(labels, axis=-1), labels)], dtype=torch.long)
+        else:
+            labels = torch.tensor(labels)
+
         if len(labels.shape) == 1:
-            labels = torch.nn.functional.one_hot(labels, num_classes=self.num_classes)
+            labels = labels.long()
+
+        # if self.one_hot and len(labels.shape) == 1:
+        #     labels = torch.nn.functional.one_hot(labels, num_classes=self.num_classes)
         batch = self.tokenize_fn(text)
         batch['labels'] = labels
         batch.pop('idx', None)

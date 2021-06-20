@@ -127,7 +127,7 @@ class RemoveNegation(AbstractTransformation):
         if tran_type == 'INV':
             y_ = y
         elif tran_type == 'SIB':
-            soften = label_type == 'hard'
+            soften = label_type == 'soft'
             y_ = invert_label(y, soften=soften)
         if self.metadata: return X_[0], y_, X_[1]
         return X_, y_

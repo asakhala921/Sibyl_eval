@@ -307,6 +307,11 @@ def concat_labels(source_text,
     # create soft target labels 
     source_ohe = one_hot_encode(source_labels, num_classes)
     target_ohe = one_hot_encode(target_labels, num_classes)
+
+    if len(source_ohe.shape) == 1:
+        source_ohe = np.expand_dims(source_ohe, 0)
+    if len(target_ohe.shape) == 1:
+        target_ohe = np.expand_dims(target_ohe, 0)
     
     if source_labels.shape[-1] == 1:
         source_cls = source_labels
@@ -321,11 +326,19 @@ def concat_labels(source_text,
     len_data_source = np.char.str_len(source_text)
     len_data_target = np.char.str_len(target_text)
     lam = len_data_source / (len_data_source + len_data_target)   
-        
+
     idx_ = np.arange(len(source_ohe))
+
+    # print(lam.shape, lam)
+    # print(idx_.shape, idx_)
+    # print(source_ohe.shape, source_ohe)
+    # print(target_ohe.shape, target_ohe)
+    # print(source_cls.shape, source_cls)
+    # print(target_cls.shape, target_cls)
     
-    source_ohe[idx_, source_cls] *= lam
-    target_ohe[idx_, target_cls] *= 1-lam
+    # NOTE: https://stackoverflow.com/questions/38673531/numpy-cannot-cast-ufunc-multiply-output-from-dtype
+    source_ohe[idx_, source_cls] = (source_ohe[idx_, source_cls] * lam)
+    target_ohe[idx_, target_cls] = (target_ohe[idx_, target_cls] * 1-lam)
     
     ohe_targets = source_ohe + target_ohe
     
