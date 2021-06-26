@@ -1,6 +1,0 @@
-,eval_loss,eval_accuracy,eval_runtime,eval_samples_per_second,epoch,run,test
-0,0.30294692516326904,0.9257609502598366,26.3794,255.313,3.75,./results/xlnet-base-cased-SST2-SibylCollator-SIB,ORIG
-1,0.2668299973011017,0.9253155159613957,26.3495,255.603,3.75,./results/xlnet-base-cased-SST2-SibylCollator-INVSIB,ORIG
-2,0.267045259475708,0.9328878990348923,26.3675,255.428,5.0,./results/xlnet-base-cased-SST2-SibylCollator-TextMix,ORIG
-3,0.29202547669410706,0.932293986636971,26.2897,256.184,5.42,./results/xlnet-base-cased-SST2-SibylCollator-SentMix,ORIG
-4,0.33149608969688416,0.9058648849294729,26.3794,255.313,4.17,./results/xlnet-base-cased-SST2-SibylCollator-WordMix,ORIG
